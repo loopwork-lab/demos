@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Lead follow-up: email → WhatsApp → AI call, run from ActiveCampaign · Demo</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1b1b18; --muted: #6b6b63;
+    --line: #e4e4de; --accent: #0f766e; --accent-soft: #e6f3f1; --code: #f1f1ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413; --card: #1d1d1b; --ink: #ecece6; --muted: #a0a097;
+      --line: #2f2f2b; --accent: #5eead4; --accent-soft: #15302c; --code: #262623;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent); background: var(--accent-soft);
+    padding: 4px 10px; border-radius: 999px; }
+  h1 { font-size: clamp(26px, 5vw, 36px); line-height: 1.2; margin: 14px 0 8px; letter-spacing: -.02em; }
+  .lead { color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 10px; margin: -12px 0 28px; }
+  .ctas:empty { display: none; }
+  .cta { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 700; text-decoration: none; padding: 10px 16px; border-radius: 10px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 24px; letter-spacing: -.02em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  h2 { font-size: 18px; margin: 0 0 12px; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; }
+  td { max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+  blockquote { margin: 14px 0 0; padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 10px 10px 0; font-size: 14px; }
+  pre { background: var(--code); border-radius: 10px; padding: 14px; overflow-x: auto; font-size: 13px; }
+  ol, ul { padding-left: 20px; margin: 0; }
+  li { margin: 4px 0; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Solution plan</span>
+  <h1>Lead follow-up: email → WhatsApp → AI call, run from ActiveCampaign</h1>
+  <p class="lead">The simplest setup I&#x27;d recommend for multiple setters who keep using their own WhatsApp Business app, with what I verify before building anything.</p>
+  <div class="ctas"></div>
+
+  <div class="stats">
+    <div class="stat"><b>1</b><span>source of truth: ActiveCampaign</span></div><div class="stat"><b>Same number</b><span>API + WhatsApp Business app via Meta coexistence</span></div><div class="stat"><b>~$0.13/min</b><span>typical all-in AI call cost (Retell, mid-range setup)</span></div><div class="stat"><b>~£0.04</b><span>per UK marketing template today; replies within 24 h are free</span></div>
+  </div>
+
+  <section>
+    <h2>Sample output</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>step</th><th>when</th><th>tool</th><th>what happens</th><th>stops if</th></tr></thead><tbody><tr><td>1</td><td>New lead arrives</td><td>ActiveCampaign</td><td>Assign setter by round-robin or source rule; start your existing email sequence</td><td>Replied / booked / opted out</td></tr><tr><td>2</td><td>No booking after email sequence</td><td>WhatsApp via coexistence BSP</td><td>Approved template sent from the assigned setter&#x27;s own number</td><td>Lead replies (setter takes over in the WhatsApp Business app)</td></tr><tr><td>3</td><td>No reply or booking after X hours</td><td>AI voice (Retell)</td><td>Outbound qualification call with booking link and live transfer or callback to the setter</td><td>Lead says stop / books / asks for a human</td></tr><tr><td>4</td><td>After every WhatsApp event and call</td><td>n8n (or Make)</td><td>Write outcome to ActiveCampaign fields and notes; tag &#x27;needs setter&#x27; when a human should follow up</td><td>—</td></tr><tr><td>5</td><td>Any opt-out keyword or request</td><td>ActiveCampaign + BSP</td><td>Unsubscribe from all channels and tag DNC</td><td>Always</td></tr></tbody></table><blockquote><b>Estimated monthly cost at 300 new leads (to confirm before purchase)</b><br>WhatsApp: ~300 marketing templates × ~£0.04 ≈ £12 in Meta fees (UK rate rises on 1 Oct 2026), plus the provider&#x27;s platform fee per number. AI calls: ~150 calls × 2 min × ~$0.13 ≈ $39, plus a caller number (~$10/month). Automation: n8n self-hosted ~$5–10/month or Make/n8n cloud ~$10–25. ActiveCampaign stays on your current plan.</blockquote>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol><li>WhatsApp: Meta&#x27;s coexistence lets one number run on the Cloud API and in the WhatsApp Business app at the same time, so each setter keeps chatting from the app while the automation sends templates from that same number. It is onboarded through a coexistence-capable provider (e.g. 360dialog or YCloud); one number can only be connected to one provider.</li><li>AI calls: Retell AI (or Vapi) triggered by an ActiveCampaign webhook. The post-call webhook returns outcome, summary and next step, which are written back to the contact so the team sees what happened.</li><li>Glue: n8n (self-hosted or cloud) or Make handles the webhooks between ActiveCampaign, the WhatsApp provider and the voice agent. No custom app to maintain.</li><li>Stop rules live in ActiveCampaign goals and tags: replied, booked, or opted out ends the sequence on every channel.</li></ol>
+  </section>
+
+  <section>
+    <h2>What's left to finish</h2>
+    <ul><li>Before building: run coexistence onboarding on one setter&#x27;s number to confirm the country, number type and provider all work with the app still in use.</li><li>Confirm your ActiveCampaign plan exposes webhooks and custom fields for the write-back.</li><li>Then build on test leads end to end, and record a short walkthrough for your team.</li></ul>
+  </section>
+
+  <footer>Built for a specific job post as a proof of concept. Sample data only. This page is removed automatically after a few days.</footer>
+</main>
+</body>
+</html>
