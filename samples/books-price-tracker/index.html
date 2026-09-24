@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bookstore catalog tracker · Demo</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1b1b18; --muted: #6b6b63;
+    --line: #e4e4de; --accent: #0f766e; --accent-soft: #e6f3f1; --code: #f1f1ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413; --card: #1d1d1b; --ink: #ecece6; --muted: #a0a097;
+      --line: #2f2f2b; --accent: #5eead4; --accent-soft: #15302c; --code: #262623;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent); background: var(--accent-soft);
+    padding: 4px 10px; border-radius: 999px; }
+  h1 { font-size: clamp(26px, 5vw, 36px); line-height: 1.2; margin: 14px 0 8px; letter-spacing: -.02em; }
+  .lead { color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 24px; letter-spacing: -.02em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  h2 { font-size: 18px; margin: 0 0 12px; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; }
+  td { max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+  pre { background: var(--code); border-radius: 10px; padding: 14px; overflow-x: auto; font-size: 13px; }
+  ol, ul { padding-left: 20px; margin: 0; }
+  li { margin: 4px 0; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Working demo</span>
+  <h1>Bookstore catalog tracker</h1>
+  <p class="lead">Collects every book with price, rating and stock from all 50 categories, and flags price changes since the last run.</p>
+
+  <div class="stats">
+    <div class="stat"><b>50 / 50</b><span>categories covered</span></div><div class="stat"><b>129</b><span>books in this sample (3 per category)</span></div><div class="stat"><b>17 s</b><span>sample run time, polite 0.3 s delay</span></div><div class="stat"><b>1,000</b><span>books in a full run</span></div>
+  </div>
+
+  <section>
+    <h2>Sample output</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>category</th><th>title</th><th>price_gbp</th><th>rating</th><th>in_stock</th><th>price_change</th></tr></thead><tbody><tr><td>Travel</td><td>It&#x27;s Only the Himalayas</td><td>45.17</td><td>2</td><td>True</td><td></td></tr><tr><td>Travel</td><td>Full Moon over Noah’s Ark: An Odyssey to Mount Ararat and Beyond</td><td>49.43</td><td>4</td><td>True</td><td></td></tr><tr><td>Travel</td><td>See America: A Celebration of Our National Parks &amp; Treasured Sites</td><td>48.87</td><td>3</td><td>True</td><td></td></tr><tr><td>Mystery</td><td>Sharp Objects</td><td>47.82</td><td>4</td><td>True</td><td></td></tr><tr><td>Mystery</td><td>In a Dark, Dark Wood</td><td>19.63</td><td>1</td><td>True</td><td></td></tr><tr><td>Mystery</td><td>The Past Never Ends</td><td>56.50</td><td>4</td><td>True</td><td></td></tr><tr><td>Historical Fiction</td><td>Tipping the Velvet</td><td>53.74</td><td>1</td><td>True</td><td></td></tr><tr><td>Historical Fiction</td><td>Forever and Forever: The Courtship of Henry Longfellow and Fanny Appleton</td><td>29.69</td><td>3</td><td>True</td><td></td></tr><tr><td>Historical Fiction</td><td>A Flight of Arrows (The Pathfinders #2)</td><td>55.53</td><td>5</td><td>True</td><td></td></tr><tr><td>Sequential Art</td><td>Scott Pilgrim&#x27;s Precious Little Life (Scott Pilgrim #1)</td><td>52.29</td><td>5</td><td>True</td><td></td></tr><tr><td>Sequential Art</td><td>Tsubasa: WoRLD CHRoNiCLE 2 (Tsubasa WoRLD CHRoNiCLE #2)</td><td>16.28</td><td>1</td><td>True</td><td></td></tr><tr><td>Sequential Art</td><td>This One Summer</td><td>19.49</td><td>4</td><td>True</td><td></td></tr><tr><td>Classics</td><td>The Secret Garden</td><td>15.08</td><td>4</td><td>True</td><td></td></tr><tr><td>Classics</td><td>The Metamorphosis</td><td>28.58</td><td>1</td><td>True</td><td></td></tr><tr><td>Classics</td><td>The Pilgrim&#x27;s Progress</td><td>50.26</td><td>2</td><td>True</td><td></td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol><li>Reads the category list from the home page, then walks every page of each category.</li><li>Extracts title, price, star rating, stock and product URL for each book.</li><li>Compares prices with the previous run and writes the change into a price_change column.</li></ol><pre>python scrape.py books.csv        # full run
+python scrape.py sample.csv 3     # 3 books per category</pre>
+  </section>
+
+  <section>
+    <h2>What's left to finish</h2>
+    <ul><li>Write results to your Google Sheet (service account) instead of CSV.</li><li>Keep a price history tab and highlight changed rows.</li><li>Run it once a day on a free scheduler (GitHub Actions or cron) with a failure alert.</li></ul>
+  </section>
+
+  <footer>Built for a specific job post as a proof of concept. Sample data only. This page is removed automatically after a few days.</footer>
+</main>
+</body>
+</html>
