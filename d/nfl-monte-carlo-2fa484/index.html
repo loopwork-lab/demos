@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NFL week 3 projections: drive-level Monte Carlo · Demo</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1b1b18; --muted: #6b6b63;
+    --line: #e4e4de; --accent: #0f766e; --accent-soft: #e6f3f1; --code: #f1f1ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413; --card: #1d1d1b; --ink: #ecece6; --muted: #a0a097;
+      --line: #2f2f2b; --accent: #5eead4; --accent-soft: #15302c; --code: #262623;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent); background: var(--accent-soft);
+    padding: 4px 10px; border-radius: 999px; }
+  h1 { font-size: clamp(26px, 5vw, 36px); line-height: 1.2; margin: 14px 0 8px; letter-spacing: -.02em; }
+  .lead { color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 10px; margin: -12px 0 28px; }
+  .ctas:empty { display: none; }
+  .cta { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 700; text-decoration: none; padding: 10px 16px; border-radius: 10px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 24px; letter-spacing: -.02em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  h2 { font-size: 18px; margin: 0 0 12px; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; }
+  td { max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+  blockquote { margin: 14px 0 0; padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 10px 10px 0; font-size: 14px; }
+  pre { background: var(--code); border-radius: 10px; padding: 14px; overflow-x: auto; font-size: 13px; }
+  ol, ul { padding-left: 20px; margin: 0; }
+  li { margin: 4px 0; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Working demo</span>
+  <h1>NFL week 3 projections: drive-level Monte Carlo</h1>
+  <p class="lead">Pulls nflverse drive data automatically, simulates every game of the week 10,000 times drive by drive, and exports fair spreads, totals and cover probabilities.</p>
+  <div class="ctas"><a class="cta" href="https://colab.research.google.com/github/loopwork-lab/demos/blob/main/d/nfl-monte-carlo-2fa484/nfl_week_sim.ipynb" target="_blank" rel="noopener">Open in Google Colab and run it</a></div>
+
+  <div class="stats">
+    <div class="stat"><b>16 games</b><span>full 2026 week 3 slate</span></div><div class="stat"><b>10,000</b><span>simulations per matchup</span></div><div class="stat"><b>1.0 s</b><span>to run the whole slate</span></div><div class="stat"><b>6,428</b><span>drives behind the team rates</span></div>
+  </div>
+
+  <section>
+    <h2>Sample output</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>matchup</th><th>fair_spread_home</th><th>market_spread_home</th><th>fair_total</th><th>market_total</th><th>home_win_pct</th><th>home_cover_-3.5</th><th>home_cover_-7.5</th><th>over_market_pct</th></tr></thead><tbody><tr><td>ATL @ GB</td><td>-4.1</td><td>-4.5</td><td>42.0</td><td>42.5</td><td>60.1</td><td>50.8</td><td>39.9</td><td>47.0</td></tr><tr><td>LAC @ BUF</td><td>-4.5</td><td>-7.0</td><td>48.7</td><td>50.5</td><td>60.0</td><td>52.0</td><td>41.8</td><td>44.5</td></tr><tr><td>CAR @ CLE</td><td>1.4</td><td>2.5</td><td>42.7</td><td>42.5</td><td>46.6</td><td>37.7</td><td>27.9</td><td>48.4</td></tr><tr><td>NYJ @ DET</td><td>-9.2</td><td>-6.5</td><td>51.5</td><td>47.5</td><td>69.3</td><td>61.9</td><td>52.4</td><td>56.3</td></tr><tr><td>HOU @ IND</td><td>-2.9</td><td>1.5</td><td>49.6</td><td>42.5</td><td>56.7</td><td>48.4</td><td>38.5</td><td>64.7</td></tr><tr><td>NE @ JAX</td><td>-1.5</td><td>-3.0</td><td>43.3</td><td>45.5</td><td>53.3</td><td>44.1</td><td>34.0</td><td>41.8</td></tr><tr><td>KC @ MIA</td><td>6.8</td><td>10.5</td><td>44.7</td><td>45.5</td><td>33.9</td><td>26.0</td><td>18.2</td><td>45.0</td></tr><tr><td>TEN @ NYG</td><td>-6.9</td><td>-2.5</td><td>43.9</td><td>38.5</td><td>65.4</td><td>57.6</td><td>47.2</td><td>59.4</td></tr><tr><td>CIN @ PIT</td><td>5.2</td><td>3.5</td><td>47.1</td><td>42.5</td><td>38.0</td><td>30.6</td><td>22.0</td><td>59.0</td></tr><tr><td>SEA @ WAS</td><td>9.9</td><td>7.0</td><td>45.7</td><td>40.5</td><td>28.2</td><td>21.4</td><td>14.1</td><td>60.4</td></tr><tr><td>ARI @ SF</td><td>-11.6</td><td>-8.5</td><td>47.7</td><td>47.5</td><td>74.7</td><td>67.3</td><td>57.7</td><td>48.0</td></tr><tr><td>MIN @ TB</td><td>3.1</td><td>1.5</td><td>42.7</td><td>42.5</td><td>42.3</td><td>33.2</td><td>23.9</td><td>48.5</td></tr><tr><td>BAL @ DAL</td><td>1.7</td><td>3.5</td><td>56.4</td><td>52.5</td><td>46.3</td><td>38.9</td><td>30.5</td><td>56.5</td></tr><tr><td>LV @ NO</td><td>-1.4</td><td>-3.0</td><td>39.7</td><td>43.5</td><td>53.1</td><td>43.5</td><td>33.2</td><td>38.7</td></tr><tr><td>LA @ DEN</td><td>3.3</td><td>2.5</td><td>42.5</td><td>44.5</td><td>41.1</td><td>32.4</td><td>22.9</td><td>41.7</td></tr><tr><td>PHI @ CHI</td><td>-0.9</td><td>4.5</td><td>47.5</td><td>41.5</td><td>51.7</td><td>43.3</td><td>33.9</td><td>60.7</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol><li>Downloads nflverse play-by-play for this season and last season (weighted lower) and collapses it to one outcome per drive: touchdown, field goal, empty, or defensive score.</li><li>Builds offense and defense rates per team, shrunk toward the league average so two games of data don&#x27;t swing everything, and blends each matchup log5-style with a small home-field boost.</li><li>Draws each team&#x27;s possessions from a Poisson distribution around the two teams&#x27; average pace, rolls every drive, and records the margin and total 10,000 times.</li><li>Fair spread = mean margin, fair total = mean combined score, plus win and cover probabilities at -3.5 and -7.5 and the chance of going over the market total.</li></ol><pre>python nfl_sim.py --season 2026 --week 3 --sims 10000 --out week3.csv</pre>
+  </section>
+
+  <section>
+    <h2>What's left to finish</h2>
+    <ul><li>College football slate through the CollegeFootballData.com API (needs your free API key).</li><li>One button in the notebook already writes the table to a new Google Sheet; can switch to updating one fixed sheet every week.</li><li>Tune the weights (last-season weight, shrinkage, home field) against past weeks and report how the fair lines compared with closing lines.</li></ul>
+  </section>
+
+  <footer>Built for a specific job post as a proof of concept. Sample data only. This page is removed automatically after a few days.</footer>
+</main>
+</body>
+</html>
