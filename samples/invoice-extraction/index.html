@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Invoice PDFs to Excel with Claude · Demo</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1b1b18; --muted: #6b6b63;
+    --line: #e4e4de; --accent: #0f766e; --accent-soft: #e6f3f1; --code: #f1f1ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413; --card: #1d1d1b; --ink: #ecece6; --muted: #a0a097;
+      --line: #2f2f2b; --accent: #5eead4; --accent-soft: #15302c; --code: #262623;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent); background: var(--accent-soft);
+    padding: 4px 10px; border-radius: 999px; }
+  h1 { font-size: clamp(26px, 5vw, 36px); line-height: 1.2; margin: 14px 0 8px; letter-spacing: -.02em; }
+  .lead { color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 10px; margin: -12px 0 28px; }
+  .ctas:empty { display: none; }
+  .cta { display: inline-block; background: var(--accent); color: var(--bg); font-weight: 700; text-decoration: none; padding: 10px 16px; border-radius: 10px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 24px; letter-spacing: -.02em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  h2 { font-size: 18px; margin: 0 0 12px; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; }
+  td { max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+  blockquote { margin: 14px 0 0; padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 10px 10px 0; font-size: 14px; }
+  pre { background: var(--code); border-radius: 10px; padding: 14px; overflow-x: auto; font-size: 13px; }
+  ol, ul { padding-left: 20px; margin: 0; }
+  li { margin: 4px 0; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Working demo</span>
+  <h1>Invoice PDFs to Excel with Claude</h1>
+  <p class="lead">Reads a folder of invoices in different layouts and languages, extracts header fields and every line item into Excel, and double-checks the math.</p>
+  <div class="ctas"><a class="cta" href="invoices.xlsx" target="_blank" rel="noopener">Download the Excel output</a><a class="cta" href="sample_invoice.pdf" target="_blank" rel="noopener">See a sample invoice (PDF)</a></div>
+
+  <div class="stats">
+    <div class="stat"><b>8</b><span>invoices, 4 layouts, 3 currencies (synthetic)</span></div><div class="stat"><b>23</b><span>line items extracted</span></div><div class="stat"><b>8 / 8</b><span>passed the math check (lines = subtotal, subtotal + tax = total)</span></div><div class="stat"><b>17 s</b><span>for the whole folder</span></div>
+  </div>
+
+  <section>
+    <h2>Sample output</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>file</th><th>vendor</th><th>invoice_number</th><th>invoice_date</th><th>currency</th><th>payment_terms</th><th>subtotal</th><th>tax</th><th>total</th><th>check</th></tr></thead><tbody><tr><td>invoice_1.pdf</td><td>Brightline Office Supply</td><td>#83014</td><td>2026-06-10</td><td>USD</td><td>Net 30</td><td>193</td><td>48.25</td><td>241.25</td><td>OK</td></tr><tr><td>invoice_2.pdf</td><td>Nordfjord Logistics AS</td><td>F31398</td><td>2026-07-26</td><td>EUR</td><td>Net 14</td><td>1669</td><td>333.8</td><td>2002.8</td><td>OK</td></tr><tr><td>invoice_3.pdf</td><td>Kettle &amp; Co. Coffee Roasters</td><td>No.62964</td><td>2026-09-23</td><td>USD</td><td>Due on receipt</td><td>2154.5</td><td>0</td><td>2154.5</td><td>OK</td></tr><tr><td>invoice_4.pdf</td><td>Pixelforge Studio Ltd</td><td>#29440</td><td>2026-08-23</td><td>GBP</td><td>Net 15</td><td>2462</td><td>123.1</td><td>2585.1</td><td>OK</td></tr><tr><td>invoice_5.pdf</td><td>Summit Cloud Hosting</td><td>#77579</td><td>2026-07-20</td><td>USD</td><td>Net 30</td><td>735</td><td>183.75</td><td>918.75</td><td>OK</td></tr><tr><td>invoice_6.pdf</td><td>Atelier Rosa Printing</td><td>F92568</td><td>2026-08-27</td><td>EUR</td><td>Net 30</td><td>270</td><td>67.5</td><td>337.5</td><td>OK</td></tr><tr><td>invoice_7.pdf</td><td>Harbor Freight Partners LLC</td><td>No.38349</td><td>2026-06-12</td><td>USD</td><td>Net 45</td><td>1560</td><td>390</td><td>1950</td><td>OK</td></tr><tr><td>invoice_8.pdf</td><td>Greenleaf Cleaning Services</td><td>No.56986</td><td>2026-09-13</td><td>USD</td><td>Net 7</td><td>800</td><td>0</td><td>800</td><td>OK</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol><li>Pulls the text out of each PDF, then asks Claude for a strict JSON schema: vendor, number, date, currency, terms, totals and every line item.</li><li>Normalizes what varies between suppliers: date formats, currency symbols, and payment terms in other languages (&#x27;30 jours&#x27; becomes &#x27;Net 30&#x27;).</li><li>Re-adds the line items and the tax in code and flags any invoice where the numbers don&#x27;t agree, so nothing wrong slips into your books silently.</li><li>Writes an Excel file with an Invoices sheet and a Line items sheet.</li></ol><pre>python extract.py invoices/ invoices.xlsx</pre>
+  </section>
+
+  <section>
+    <h2>What's left to finish</h2>
+    <ul><li>Scanned or photographed invoices: send page images to Claude instead of extracted text.</li><li>Watch an email inbox or Drive folder and process new invoices automatically.</li><li>Export to QuickBooks, Xero or Google Sheets, and match invoices to purchase orders.</li></ul>
+  </section>
+
+  <footer>Sample project with synthetic invoices.</footer>
+</main>
+</body>
+</html>
