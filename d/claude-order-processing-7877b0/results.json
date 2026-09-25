@@ -1,0 +1,3188 @@
+{
+ "as_of": "2026-09-25T10:00",
+ "generated_at": "2026-09-25T17:14:39",
+ "model": "Claude Sonnet via the claude CLI",
+ "timing": {
+  "read_s": 0.08,
+  "claude_s": 63.6,
+  "rules_ms": 29,
+  "total_s": 64.1
+ },
+ "counts": {
+  "orders": 10,
+  "formats": [
+   "CSV",
+   "Chat",
+   "Email",
+   "Excel",
+   "PDF"
+  ],
+  "lines": 56,
+  "approved": 6,
+  "review": 4,
+  "accounts": 120,
+  "skus": 45,
+  "value_approved": 6225.71
+ },
+ "eval": {
+  "orders_correct": 10,
+  "orders": 10,
+  "lines_correct": 56,
+  "lines": 56,
+  "flags_correct": 10,
+  "detail": [
+   {
+    "file": "email_2026-09-24_1652.eml",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "4/4"
+   },
+   {
+    "file": "email_2026-09-24_1805.eml",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "6/6"
+   },
+   {
+    "file": "email_2026-09-25_0541.eml",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "6/6"
+   },
+   {
+    "file": "reorder_2026-09-25.csv",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "3/3"
+   },
+   {
+    "file": "BV_PO_export_55821.xlsx",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "8/8"
+   },
+   {
+    "file": "chat_export_2026-09-25.txt",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "4/4"
+   },
+   {
+    "file": "email_2026-09-25_0814.eml",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "4/4"
+   },
+   {
+    "file": "email_2026-09-25_0902.eml",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "3/3"
+   },
+   {
+    "file": "PO_LGH-20931.pdf",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "10/10"
+   },
+   {
+    "file": "RR-2209_order.pdf",
+    "ok": true,
+    "checks": {
+     "account": true,
+     "po": true,
+     "date": true,
+     "lines": true,
+     "status": true,
+     "reasons": true
+    },
+    "lines": "8/8"
+   }
+  ]
+ },
+ "orders": [
+  {
+   "file": "email_2026-09-24_1652.eml",
+   "format": "Email",
+   "received": "2026-09-24T16:52",
+   "received_source": "email header",
+   "customer": {
+    "as_written": "Harbor St Bistro",
+    "sender_email": "marco@harborstreetbistro.example",
+    "account_id": "ACC-014",
+    "method": "known alias + sender's email domain",
+    "confidence": 0.99,
+    "best_guess": null,
+    "domain_account": "ACC-014"
+   },
+   "po_number": "4471",
+   "lines": [
+    {
+     "as_written": "the big olive oil",
+     "qty_written": "2 cs",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "OLV-EV-3L",
+      "OLV-EV-5L",
+      "OLV-PO-5L"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "OLV-EV-5L",
+     "method": "this account's confirmed phrase 'big olive oil' (confirmed in review 2026-08-12)",
+     "confidence": 0.99,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Extra virgin olive oil 5 L jug",
+     "sell_unit": "case",
+     "pack": "3 x 5 L",
+     "candidate_names": {},
+     "unit_price": 125.4,
+     "line_total": 250.8
+    },
+    {
+     "as_written": "00 flour",
+     "qty_written": "3 bags",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "FLR-00-25"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "FLR-00-25",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "Tipo 00 pizza flour 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 28.31,
+     "line_total": 84.93
+    },
+    {
+     "as_written": "crushed toms",
+     "qty_written": "12 tins",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "TOM-CR-10"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "Claude kept 12 tins as written; code converted it to 2 cases of 6 cans",
+     "source": "document",
+     "sku": "TOM-CR-10",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Crushed tomatoes #10 can",
+     "sell_unit": "case",
+     "pack": "6 x #10 can",
+     "candidate_names": {},
+     "unit_price": 30.78,
+     "line_total": 61.56
+    },
+    {
+     "as_written": "parm",
+     "qty_written": "1 case",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CHS-PRM-2"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CHS-PRM-2",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 4,
+     "product": "Parmigiano Reggiano 24-month wedges",
+     "sell_unit": "case",
+     "pack": "2 x 2.5 kg",
+     "candidate_names": {},
+     "unit_price": 91.2,
+     "line_total": 91.2
+    }
+   ],
+   "requested_as_written": "thursday",
+   "delivery_instructions": "Thursday delivery if possible; kitchen is slammed on Tuesday.",
+   "notes_for_reviewer": [
+    "'The big olive oil' is ambiguous (type and size not stated).",
+    "Crushed tomatoes ordered as 12 tins; catalog sells by case of 6 x #10 cans, unit left as written.",
+    "Parm requested 'if you have it'."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 488.49,
+   "requested_date": "2026-10-01",
+   "delivery_date": "2026-10-01",
+   "delivery_note": "",
+   "reasons": [],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-014 Harbor Street Bistro (matched by: known alias + sender's email domain)"
+    },
+    {
+     "ok": true,
+     "text": "4 of 4 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "text": "PO number 4471 present (this account requires one)"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Preferred price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "$488.49 meets the $250.00 account minimum"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Thu 1 Oct is on this account's route (Tue, Thu)"
+    }
+   ],
+   "notes": [],
+   "status": "AUTO-APPROVED",
+   "account": {
+    "id": "ACC-014",
+    "name": "Harbor Street Bistro",
+    "tier": "Preferred",
+    "delivery_days": "Tue, Thu",
+    "min_order": 250.0,
+    "payment_terms": "Net 30",
+    "rules": [
+     "Requires PO number"
+    ],
+    "po_required": true,
+    "aliases": "Harbor St Bistro; Harbour Street Bistro; HSB"
+   },
+   "extraction": {
+    "file": "email_2026-09-24_1652.eml",
+    "customer_as_written": "Harbor St Bistro",
+    "contact_name": "Marco",
+    "sender_email": "marco@harborstreetbistro.example",
+    "po_number": "4471",
+    "requested_date_as_written": "thursday",
+    "requested_date": "2026-10-01",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "the big olive oil",
+      "quantity": 2,
+      "unit_as_written": "cs",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "OLV-EV-3L",
+       "OLV-EV-5L",
+       "OLV-PO-5L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "00 flour",
+      "quantity": 3,
+      "unit_as_written": "bags",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "FLR-00-25"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "crushed toms",
+      "quantity": 12,
+      "unit_as_written": "tins",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "TOM-CR-10"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "parm",
+      "quantity": 1,
+      "unit_as_written": "case",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CHS-PRM-2"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "Thursday delivery if possible; kitchen is slammed on Tuesday.",
+    "notes_for_reviewer": [
+     "'The big olive oil' is ambiguous (type and size not stated).",
+     "Crushed tomatoes ordered as 12 tins; catalog sells by case of 6 x #10 cans, unit left as written.",
+     "Parm requested 'if you have it'."
+    ]
+   },
+   "id": "ORD-0001",
+   "source": {
+    "raw": "From: Marco <marco@harborstreetbistro.example>\nTo: orders@bayline.example\nDate: Thu, 24 Sep 2026 16:52:10 -0400\nSubject: order for next wk\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nhey guys\n\ncan u send over 2 cs of the big olive oil, 3 bags of 00 flour and 12 tins of crushed toms. also a case of parm if you have it\n\nPO is 4471\nthursday delivery if poss, we're slammed tues\n\nthx\nMarco\nHarbor St Bistro\n"
+   }
+  },
+  {
+   "file": "email_2026-09-24_1805.eml",
+   "format": "Email",
+   "received": "2026-09-24T18:05",
+   "received_source": "email header",
+   "customer": {
+    "as_written": "Old Mill Deli & Grocer",
+    "sender_email": "office@oldmilldeli.example",
+    "account_id": "ACC-022",
+    "method": "exact name + sender's email domain",
+    "confidence": 1.0,
+    "best_guess": null,
+    "domain_account": "ACC-022"
+   },
+   "po_number": "OM-2291",
+   "lines": [
+    {
+     "as_written": "evoo 1l",
+     "qty_written": "4 cs",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "OLV-EV-1L"
+     ],
+     "inferred": false,
+     "qty": 4,
+     "unit_note": "",
+     "source": "document",
+     "sku": "OLV-EV-1L",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Extra virgin olive oil 1 L",
+     "sell_unit": "case",
+     "pack": "12 x 1 L",
+     "candidate_names": {},
+     "unit_price": 118.0,
+     "line_total": 472.0
+    },
+    {
+     "as_written": "spagetti (the 5kg ones)",
+     "qty_written": "10",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "PST-SPG-5"
+     ],
+     "inferred": false,
+     "qty": 10,
+     "unit_note": "",
+     "source": "document",
+     "sku": "PST-SPG-5",
+     "method": "Claude's reading, confirmed by spelling match",
+     "confidence": 0.93,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "Spaghetti 5 kg",
+     "sell_unit": "case",
+     "pack": "5 kg case",
+     "candidate_names": {},
+     "unit_price": 12.6,
+     "line_total": 126.0
+    },
+    {
+     "as_written": "whole peeld tomatos",
+     "qty_written": "5 cs",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "TOM-WH-10"
+     ],
+     "inferred": false,
+     "qty": 5,
+     "unit_note": "",
+     "source": "document",
+     "sku": "TOM-WH-10",
+     "method": "Claude's reading, confirmed by spelling match",
+     "confidence": 0.93,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Whole peeled tomatoes #10 can",
+     "sell_unit": "case",
+     "pack": "6 x #10 can",
+     "candidate_names": {},
+     "unit_price": 34.2,
+     "line_total": 171.0
+    },
+    {
+     "as_written": "balsmic",
+     "qty_written": "2",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "VIN-BAL-5L"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "VIN-BAL-5L",
+     "method": "Claude's reading, confirmed by spelling match",
+     "confidence": 0.93,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 4,
+     "product": "Balsamic vinegar of Modena 5 L",
+     "sell_unit": "jug",
+     "pack": "5 L jug",
+     "candidate_names": {},
+     "unit_price": 38.0,
+     "line_total": 76.0
+    },
+    {
+     "as_written": "kosher salt",
+     "qty_written": "3",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "SLT-KOS-12"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "SLT-KOS-12",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 5,
+     "product": "Kosher salt 12 x 1.36 kg",
+     "sell_unit": "case",
+     "pack": "12 x 1.36 kg",
+     "candidate_names": {},
+     "unit_price": 39.0,
+     "line_total": 117.0
+    },
+    {
+     "as_written": "bread flour",
+     "qty_written": "50 kg",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "FLR-BR-25"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "Claude kept 50 kg as written; code converted it to 2 × 25 kg bags",
+     "source": "document",
+     "sku": "FLR-BR-25",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 6,
+     "product": "Bread flour 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 23.9,
+     "line_total": 47.8
+    }
+   ],
+   "requested_as_written": "Monday",
+   "delivery_instructions": "Monday delivery before noon if possible.",
+   "notes_for_reviewer": [
+    "Forwarded chef's list (Luis); sent by office (Dana). Quoted earlier order from 14 Sep ignored.",
+    "Bread flour ordered as 50 kg; catalog sells 25 kg bags, unit left as written.",
+    "Several lines have no unit written."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 1009.8,
+   "requested_date": "2026-09-28",
+   "delivery_date": "2026-09-29",
+   "delivery_note": "Requested Mon 28 Sep; this account's route runs Tue, Fri → confirm Tue 29 Sep delivery with the customer.",
+   "reasons": [
+    {
+     "code": "DATE_CHANGED",
+     "label": "date not on route",
+     "text": "Requested Mon 28 Sep; this account's route runs Tue, Fri → confirm Tue 29 Sep delivery with the customer.",
+     "action": "Call or email the customer to confirm the new date; release once they agree."
+    }
+   ],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-022 Old Mill Deli & Grocer (matched by: exact name + sender's email domain)"
+    },
+    {
+     "ok": true,
+     "text": "6 of 6 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "text": "PO number OM-2291 present (this account requires one)"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Standard price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "$1,009.80 meets the $200.00 account minimum"
+    },
+    {
+     "ok": false,
+     "text": "Requested date isn't on this account's route (Tue, Fri); proposed Tue 29 Sep"
+    }
+   ],
+   "notes": [
+    "No substitutions: pick exactly as ordered; call the customer if anything is short"
+   ],
+   "status": "NEEDS REVIEW",
+   "account": {
+    "id": "ACC-022",
+    "name": "Old Mill Deli & Grocer",
+    "tier": "Standard",
+    "delivery_days": "Tue, Fri",
+    "min_order": 200.0,
+    "payment_terms": "Net 14",
+    "rules": [
+     "Requires PO number",
+     "No substitutions"
+    ],
+    "po_required": true,
+    "aliases": "Old Mill Deli; Old Mill"
+   },
+   "extraction": {
+    "file": "email_2026-09-24_1805.eml",
+    "customer_as_written": "Old Mill Deli & Grocer",
+    "contact_name": "Dana",
+    "sender_email": "office@oldmilldeli.example",
+    "po_number": "OM-2291",
+    "requested_date_as_written": "Monday",
+    "requested_date": "2026-09-28",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "evoo 1l",
+      "quantity": 4,
+      "unit_as_written": "cs",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "OLV-EV-1L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "spagetti (the 5kg ones)",
+      "quantity": 10,
+      "unit_as_written": "",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "PST-SPG-5"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "whole peeld tomatos",
+      "quantity": 5,
+      "unit_as_written": "cs",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "TOM-WH-10"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "balsmic",
+      "quantity": 2,
+      "unit_as_written": "",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "VIN-BAL-5L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "kosher salt",
+      "quantity": 3,
+      "unit_as_written": "",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "SLT-KOS-12"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "bread flour",
+      "quantity": 50,
+      "unit_as_written": "kg",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "FLR-BR-25"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "Monday delivery before noon if possible.",
+    "notes_for_reviewer": [
+     "Forwarded chef's list (Luis); sent by office (Dana). Quoted earlier order from 14 Sep ignored.",
+     "Bread flour ordered as 50 kg; catalog sells 25 kg bags, unit left as written.",
+     "Several lines have no unit written."
+    ]
+   },
+   "id": "ORD-0002",
+   "source": {
+    "raw": "From: Old Mill Deli Office <office@oldmilldeli.example>\nTo: orders@bayline.example\nDate: Thu, 24 Sep 2026 18:05:44 -0400\nSubject: Fwd: order\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nHi, pls see chef's list below. PO# OM-2291.\nMonday delivery please, before noon if you can.\n\nDana\nOffice, Old Mill Deli & Grocer\n\n---------- Forwarded message ---------\nFrom: Luis <kitchen@oldmilldeli.example>\nDate: Thu, 24 Sep 2026 at 15:31\nSubject: order\n\nneed for next wk:\n- 4 cs evoo 1l\n- 10 spagetti (the 5kg ones)\n- 5 cs whole peeld tomatos\n- 2 balsmic\n- kosher salt x3\n- 50kg bread flour\n\n> On Mon, 14 Sep 2026 at 09:12, Luis <kitchen@oldmilldeli.example> wrote:\n> - 2 cs evoo 1l\n> - 6 spagetti\n> - 3 cs whole tomatos\n> - 1 balsmic\n"
+   }
+  },
+  {
+   "file": "email_2026-09-25_0541.eml",
+   "format": "Email",
+   "received": "2026-09-25T05:41",
+   "received_source": "email header",
+   "customer": {
+    "as_written": "Golden Crumb",
+    "sender_email": "orders@goldencrumb.example",
+    "account_id": "ACC-037",
+    "method": "known alias + sender's email domain",
+    "confidence": 0.99,
+    "best_guess": null,
+    "domain_account": "ACC-037"
+   },
+   "po_number": "",
+   "lines": [
+    {
+     "as_written": "same as last time (flour ×2)",
+     "qty_written": "4 on SO-10281",
+     "sku": "FLR-BR-25",
+     "candidates": [],
+     "rejected_skus": [],
+     "method": "account order history (SO-10281, ×2 for 'flour')",
+     "confidence": 1.0,
+     "qty": 8,
+     "unit_note": "",
+     "source": "history",
+     "n": 1,
+     "product": "Bread flour 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 21.51,
+     "line_total": 172.08
+    },
+    {
+     "as_written": "same as last time",
+     "qty_written": "2 on SO-10281",
+     "sku": "BTR-UNS-36",
+     "candidates": [],
+     "rejected_skus": [],
+     "method": "account order history (SO-10281)",
+     "confidence": 1.0,
+     "qty": 2,
+     "unit_note": "",
+     "source": "history",
+     "n": 2,
+     "product": "Unsalted butter 1 lb",
+     "sell_unit": "case",
+     "pack": "36 x 1 lb",
+     "candidate_names": {},
+     "unit_price": 127.8,
+     "line_total": 255.6
+    },
+    {
+     "as_written": "same as last time",
+     "qty_written": "2 on SO-10281",
+     "sku": "SUG-GR-25",
+     "candidates": [],
+     "rejected_skus": [],
+     "method": "account order history (SO-10281)",
+     "confidence": 1.0,
+     "qty": 2,
+     "unit_note": "",
+     "source": "history",
+     "n": 3,
+     "product": "Granulated sugar 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 28.08,
+     "line_total": 56.16
+    },
+    {
+     "as_written": "same as last time",
+     "qty_written": "1 on SO-10281",
+     "sku": "YST-INS-20",
+     "candidates": [],
+     "rejected_skus": [],
+     "method": "account order history (SO-10281)",
+     "confidence": 1.0,
+     "qty": 1,
+     "unit_note": "",
+     "source": "history",
+     "n": 4,
+     "product": "Instant dry yeast 20 x 500 g",
+     "sell_unit": "case",
+     "pack": "20 x 500 g",
+     "candidate_names": {},
+     "unit_price": 79.2,
+     "line_total": 79.2
+    },
+    {
+     "as_written": "same as last time",
+     "qty_written": "2 on SO-10281",
+     "sku": "EGG-LG-15",
+     "candidates": [],
+     "rejected_skus": [],
+     "method": "account order history (SO-10281)",
+     "confidence": 1.0,
+     "qty": 2,
+     "unit_note": "",
+     "source": "history",
+     "n": 5,
+     "product": "Large eggs, 15 dozen",
+     "sell_unit": "case",
+     "pack": "15 dozen",
+     "candidate_names": {},
+     "unit_price": 47.25,
+     "line_total": 94.5
+    },
+    {
+     "as_written": "dark choc callets",
+     "qty_written": "1 bag",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CHC-DK-5"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CHC-DK-5",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 6,
+     "product": "Dark chocolate callets 54% 5 kg",
+     "sell_unit": "bag",
+     "pack": "5 kg bag",
+     "candidate_names": {},
+     "unit_price": 66.6,
+     "line_total": 66.6
+    }
+   ],
+   "requested_as_written": "Monday",
+   "delivery_instructions": "",
+   "notes_for_reviewer": [
+    "Previous order contents not given; 'the flour' may cover more than one flour type in the last order."
+   ],
+   "unmatched_adjustments": [],
+   "repeat_of": {
+    "order_id": "SO-10281",
+    "date": "2026-09-18"
+   },
+   "subtotal": 724.14,
+   "requested_date": "2026-09-28",
+   "delivery_date": "2026-09-28",
+   "delivery_note": "",
+   "reasons": [],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-037 Golden Crumb Bakery (matched by: known alias + sender's email domain)"
+    },
+    {
+     "ok": true,
+     "text": "6 of 6 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Key account price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "$724.14 meets the $300.00 account minimum"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Mon 28 Sep is on this account's route (Mon, Wed, Fri)"
+    }
+   ],
+   "notes": [
+    "Driver: Deliver before 6am",
+    "Driver: Rear entrance delivery"
+   ],
+   "status": "AUTO-APPROVED",
+   "account": {
+    "id": "ACC-037",
+    "name": "Golden Crumb Bakery",
+    "tier": "Key account",
+    "delivery_days": "Mon, Wed, Fri",
+    "min_order": 300.0,
+    "payment_terms": "Net 14",
+    "rules": [
+     "Deliver before 6am",
+     "Rear entrance delivery"
+    ],
+    "po_required": false,
+    "aliases": "Golden Crumb"
+   },
+   "extraction": {
+    "file": "email_2026-09-25_0541.eml",
+    "customer_as_written": "Golden Crumb",
+    "contact_name": "Priya",
+    "sender_email": "orders@goldencrumb.example",
+    "po_number": "",
+    "requested_date_as_written": "Monday",
+    "requested_date": "2026-09-28",
+    "repeat_previous_order": true,
+    "repeat_adjustments": [
+     {
+      "item_as_written": "flour",
+      "multiplier": 2
+     }
+    ],
+    "line_items": [
+     {
+      "text_as_written": "dark choc callets",
+      "quantity": 1,
+      "unit_as_written": "bag",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CHC-DK-5"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "",
+    "notes_for_reviewer": [
+     "Previous order contents not given; 'the flour' may cover more than one flour type in the last order."
+    ]
+   },
+   "id": "ORD-0003",
+   "source": {
+    "raw": "From: Golden Crumb Orders <orders@goldencrumb.example>\nTo: orders@bayline.example\nDate: Fri, 25 Sep 2026 05:41:03 -0400\nSubject: Re: weekly order\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nMorning!\nSame as last time but double the flour pls. And add a bag of the dark choc callets.\nMonday is fine.\nPriya\n"
+   }
+  },
+  {
+   "file": "reorder_2026-09-25.csv",
+   "format": "CSV",
+   "received": "2026-09-25T06:00",
+   "received_source": "export timestamp",
+   "customer": {
+    "as_written": "Little Fern Coffee",
+    "sender_email": "",
+    "account_id": "ACC-102",
+    "method": "exact name",
+    "confidence": 1.0,
+    "best_guess": null,
+    "domain_account": null
+   },
+   "po_number": "",
+   "lines": [
+    {
+     "as_written": "Vanilla extract 1L",
+     "qty_written": "2 EA",
+     "item_code": "VAN-EXT-1L",
+     "price_on_document": null,
+     "claude_candidates": [
+      "VAN-EXT-1L"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "VAN-EXT-1L",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Pure vanilla extract 1 L",
+     "sell_unit": "bottle",
+     "pack": "1 L bottle",
+     "candidate_names": {},
+     "unit_price": 58.0,
+     "line_total": 116.0
+    },
+    {
+     "as_written": "Wildflower honey 3kg",
+     "qty_written": "1 EA",
+     "item_code": "HNY-WF-3",
+     "price_on_document": null,
+     "claude_candidates": [
+      "HNY-WF-3"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "HNY-WF-3",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "Wildflower honey 3 kg tub",
+     "sell_unit": "tub",
+     "pack": "3 kg tub",
+     "candidate_names": {},
+     "unit_price": 27.5,
+     "line_total": 27.5
+    },
+    {
+     "as_written": "Sliced almonds",
+     "qty_written": "1 BAG",
+     "item_code": "NUT-ALM-SL",
+     "price_on_document": null,
+     "claude_candidates": [
+      "NUT-ALM-SL"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "NUT-ALM-SL",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Sliced almonds 2.27 kg",
+     "sell_unit": "bag",
+     "pack": "2.27 kg bag",
+     "candidate_names": {},
+     "unit_price": 34.8,
+     "line_total": 34.8
+    }
+   ],
+   "requested_as_written": "",
+   "delivery_instructions": "",
+   "notes_for_reviewer": [
+    "Automated par reorder export; quantities taken from qty_to_order column.",
+    "No delivery date requested."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 178.3,
+   "requested_date": "",
+   "delivery_date": "2026-09-29",
+   "delivery_note": "",
+   "reasons": [
+    {
+     "code": "BELOW_MINIMUM",
+     "label": "below minimum",
+     "text": "Order total $178.30 is below Little Fern Coffee Co.'s $250.00 minimum ($71.70 short).",
+     "action": "Hold and merge with their next order, or add the small-order fee and confirm with the customer."
+    }
+   ],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-102 Little Fern Coffee Co. (matched by: exact name)"
+    },
+    {
+     "ok": true,
+     "text": "3 of 3 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Standard price list, never from the document"
+    },
+    {
+     "ok": false,
+     "text": "$178.30 is under the $250.00 account minimum"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Tue 29 Sep is on this account's route (Tue, Fri)"
+    }
+   ],
+   "notes": [],
+   "status": "NEEDS REVIEW",
+   "account": {
+    "id": "ACC-102",
+    "name": "Little Fern Coffee Co.",
+    "tier": "Standard",
+    "delivery_days": "Tue, Fri",
+    "min_order": 250.0,
+    "payment_terms": "Net 14",
+    "rules": [],
+    "po_required": false,
+    "aliases": "Little Fern Coffee; Little Fern"
+   },
+   "extraction": {
+    "file": "reorder_2026-09-25.csv",
+    "customer_as_written": "Little Fern Coffee",
+    "contact_name": "",
+    "sender_email": "",
+    "po_number": "",
+    "requested_date_as_written": "",
+    "requested_date": "",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "Vanilla extract 1L",
+      "quantity": 2,
+      "unit_as_written": "EA",
+      "item_code_on_document": "VAN-EXT-1L",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "VAN-EXT-1L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Wildflower honey 3kg",
+      "quantity": 1,
+      "unit_as_written": "EA",
+      "item_code_on_document": "HNY-WF-3",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "HNY-WF-3"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Sliced almonds",
+      "quantity": 1,
+      "unit_as_written": "BAG",
+      "item_code_on_document": "NUT-ALM-SL",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "NUT-ALM-SL"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "",
+    "notes_for_reviewer": [
+     "Automated par reorder export; quantities taken from qty_to_order column.",
+     "No delivery date requested."
+    ]
+   },
+   "id": "ORD-0004",
+   "source": {
+    "raw": "export_type,par_reorder,,,,\ngenerated_at,2026-09-25 06:00,,,,\nlocation,Little Fern Coffee - Main St,,,,\n,,,,,\nitem_name,supplier_sku,on_hand,par,qty_to_order,uom\nVanilla extract 1L,VAN-EXT-1L,1,3,2,EA\nWildflower honey 3kg,HNY-WF-3,0,1,1,EA\nSliced almonds,NUT-ALM-SL,0.5,1.5,1,BAG\n"
+   }
+  },
+  {
+   "file": "BV_PO_export_55821.xlsx",
+   "format": "Excel",
+   "received": "2026-09-25T06:30",
+   "received_source": "export timestamp",
+   "customer": {
+    "as_written": "Bramble & Vine",
+    "sender_email": "",
+    "account_id": "ACC-063",
+    "method": "known alias",
+    "confidence": 0.98,
+    "best_guess": null,
+    "domain_account": null
+   },
+   "po_number": "BV-55821",
+   "lines": [
+    {
+     "as_written": "FLOUR TIPO 00 25KG",
+     "qty_written": "6 BAG",
+     "item_code": "FLR-00-25",
+     "price_on_document": null,
+     "claude_candidates": [
+      "FLR-00-25"
+     ],
+     "inferred": false,
+     "qty": 6,
+     "unit_note": "",
+     "source": "document",
+     "sku": "FLR-00-25",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Tipo 00 pizza flour 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 28.31,
+     "line_total": 169.86
+    },
+    {
+     "as_written": "MOZZ FIOR DI LATTE 12X250G",
+     "qty_written": "4 CS",
+     "item_code": "CHS-MOZ-FD",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CHS-MOZ-FD"
+     ],
+     "inferred": false,
+     "qty": 4,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CHS-MOZ-FD",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "Fresh mozzarella fior di latte 250 g",
+     "sell_unit": "case",
+     "pack": "12 x 250 g",
+     "candidate_names": {},
+     "unit_price": 45.6,
+     "line_total": 182.4
+    },
+    {
+     "as_written": "TOMATOES CRUSHED #10",
+     "qty_written": "3 CS",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "TOM-CR-10"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "TOM-CR-10",
+     "method": "Claude's reading, confirmed by spelling match",
+     "confidence": 0.93,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Crushed tomatoes #10 can",
+     "sell_unit": "case",
+     "pack": "6 x #10 can",
+     "candidate_names": {},
+     "unit_price": 30.78,
+     "line_total": 92.34
+    },
+    {
+     "as_written": "EGGS LARGE 15DZ",
+     "qty_written": "30 DZ",
+     "item_code": "EGG-LG-15",
+     "price_on_document": null,
+     "claude_candidates": [
+      "EGG-LG-15"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "Claude kept 30 DZ as written; code converted it to 2 cases of 15 dozen",
+     "source": "document",
+     "sku": "EGG-LG-15",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 4,
+     "product": "Large eggs, 15 dozen",
+     "sell_unit": "case",
+     "pack": "15 dozen",
+     "candidate_names": {},
+     "unit_price": 49.88,
+     "line_total": 99.76
+    },
+    {
+     "as_written": "BUTTER UNSALTED 1LB",
+     "qty_written": "72 LB",
+     "item_code": "BTR-UNS-36",
+     "price_on_document": null,
+     "claude_candidates": [
+      "BTR-UNS-36"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "Claude kept 72 LB as written; code converted it to 2 × 36 lb cases",
+     "source": "document",
+     "sku": "BTR-UNS-36",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 5,
+     "product": "Unsalted butter 1 lb",
+     "sell_unit": "case",
+     "pack": "36 x 1 lb",
+     "candidate_names": {},
+     "unit_price": 134.9,
+     "line_total": 269.8
+    },
+    {
+     "as_written": "OIL OLIVE PURE 5L",
+     "qty_written": "2 CS",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "OLV-PO-5L"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "OLV-PO-5L",
+     "method": "Claude's reading, confirmed by spelling match",
+     "confidence": 0.93,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 6,
+     "product": "Pure olive oil 5 L jug",
+     "sell_unit": "case",
+     "pack": "3 x 5 L",
+     "candidate_names": {},
+     "unit_price": 91.2,
+     "line_total": 182.4
+    },
+    {
+     "as_written": "VINEGAR RED WINE 5L",
+     "qty_written": "1 EA",
+     "item_code": "VIN-RW-5L",
+     "price_on_document": null,
+     "claude_candidates": [
+      "VIN-RW-5L"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "VIN-RW-5L",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 7,
+     "product": "Red wine vinegar 5 L",
+     "sell_unit": "jug",
+     "pack": "5 L jug",
+     "candidate_names": {},
+     "unit_price": 18.52,
+     "line_total": 18.52
+    },
+    {
+     "as_written": "CHEESE PARMIGIANO REGG 24M",
+     "qty_written": "1 CS",
+     "item_code": "CHS-PRM-2",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CHS-PRM-2"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CHS-PRM-2",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 8,
+     "product": "Parmigiano Reggiano 24-month wedges",
+     "sell_unit": "case",
+     "pack": "2 x 2.5 kg",
+     "candidate_names": {},
+     "unit_price": 91.2,
+     "line_total": 91.2
+    }
+   ],
+   "requested_as_written": "09/28/2026",
+   "delivery_instructions": "",
+   "notes_for_reviewer": [
+    "Eggs ordered as 30 DZ on a 15-dozen case SKU; units left as written.",
+    "Butter ordered as 72 LB on a 36 x 1 lb case SKU; units left as written.",
+    "Date 09/28/2026 read as US format (MM/DD).",
+    "No sender email or contact name in the export."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 1106.28,
+   "requested_date": "2026-09-28",
+   "delivery_date": "2026-09-28",
+   "delivery_note": "",
+   "reasons": [],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-063 Bramble & Vine Restaurant Group (matched by: known alias)"
+    },
+    {
+     "ok": true,
+     "text": "8 of 8 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "text": "PO number BV-55821 present (this account requires one)"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Preferred price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "$1,106.28 meets the $400.00 account minimum"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Mon 28 Sep is on this account's route (Mon, Wed, Fri)"
+    }
+   ],
+   "notes": [
+    "Driver: Liftgate required"
+   ],
+   "status": "AUTO-APPROVED",
+   "account": {
+    "id": "ACC-063",
+    "name": "Bramble & Vine Restaurant Group",
+    "tier": "Preferred",
+    "delivery_days": "Mon, Wed, Fri",
+    "min_order": 400.0,
+    "payment_terms": "Net 30",
+    "rules": [
+     "Requires PO number",
+     "Liftgate required"
+    ],
+    "po_required": true,
+    "aliases": "Bramble & Vine; B&V Group"
+   },
+   "extraction": {
+    "file": "BV_PO_export_55821.xlsx",
+    "customer_as_written": "Bramble & Vine",
+    "contact_name": "",
+    "sender_email": "",
+    "po_number": "BV-55821",
+    "requested_date_as_written": "09/28/2026",
+    "requested_date": "2026-09-28",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "FLOUR TIPO 00 25KG",
+      "quantity": 6,
+      "unit_as_written": "BAG",
+      "item_code_on_document": "FLR-00-25",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "FLR-00-25"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "MOZZ FIOR DI LATTE 12X250G",
+      "quantity": 4,
+      "unit_as_written": "CS",
+      "item_code_on_document": "CHS-MOZ-FD",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CHS-MOZ-FD"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "TOMATOES CRUSHED #10",
+      "quantity": 3,
+      "unit_as_written": "CS",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "TOM-CR-10"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "EGGS LARGE 15DZ",
+      "quantity": 30,
+      "unit_as_written": "DZ",
+      "item_code_on_document": "EGG-LG-15",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "EGG-LG-15"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "BUTTER UNSALTED 1LB",
+      "quantity": 72,
+      "unit_as_written": "LB",
+      "item_code_on_document": "BTR-UNS-36",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "BTR-UNS-36"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "OIL OLIVE PURE 5L",
+      "quantity": 2,
+      "unit_as_written": "CS",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "OLV-PO-5L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "VINEGAR RED WINE 5L",
+      "quantity": 1,
+      "unit_as_written": "EA",
+      "item_code_on_document": "VIN-RW-5L",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "VIN-RW-5L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "CHEESE PARMIGIANO REGG 24M",
+      "quantity": 1,
+      "unit_as_written": "CS",
+      "item_code_on_document": "CHS-PRM-2",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CHS-PRM-2"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "",
+    "notes_for_reviewer": [
+     "Eggs ordered as 30 DZ on a 15-dozen case SKU; units left as written.",
+     "Butter ordered as 72 LB on a 36 x 1 lb case SKU; units left as written.",
+     "Date 09/28/2026 read as US format (MM/DD).",
+     "No sender email or contact name in the export."
+    ]
+   },
+   "id": "ORD-0005",
+   "source": {
+    "raw": "Purchase Order Export |  | generated 2026-09-25 06:30\n\nPO Ref | Location | Req. Delivery | Vendor Part No | Item Description | Pack | Order Qty | UOM\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | FLR-00-25 | FLOUR TIPO 00 25KG | 25KG | 6 | BAG\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | CHS-MOZ-FD | MOZZ FIOR DI LATTE 12X250G | 12/250G | 4 | CS\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 |  | TOMATOES CRUSHED #10 | 6/#10 | 3 | CS\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | EGG-LG-15 | EGGS LARGE 15DZ | 15DZ | 30 | DZ\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | BTR-UNS-36 | BUTTER UNSALTED 1LB | 36/1LB | 72 | LB\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 |  | OIL OLIVE PURE 5L | 3/5L | 2 | CS\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | VIN-RW-5L | VINEGAR RED WINE 5L | 5L | 1 | EA\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | CHS-PRM-2 | CHEESE PARMIGIANO REGG 24M | 2/2.5KG | 1 | CS\n\nSYNTHETIC DEMO DATA - fictional businesses, not real customers",
+    "rows": [
+     [
+      "Purchase Order Export",
+      "",
+      "generated 2026-09-25 06:30"
+     ],
+     [],
+     [
+      "PO Ref",
+      "Location",
+      "Req. Delivery",
+      "Vendor Part No",
+      "Item Description",
+      "Pack",
+      "Order Qty",
+      "UOM"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "FLR-00-25",
+      "FLOUR TIPO 00 25KG",
+      "25KG",
+      "6",
+      "BAG"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "CHS-MOZ-FD",
+      "MOZZ FIOR DI LATTE 12X250G",
+      "12/250G",
+      "4",
+      "CS"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "",
+      "TOMATOES CRUSHED #10",
+      "6/#10",
+      "3",
+      "CS"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "EGG-LG-15",
+      "EGGS LARGE 15DZ",
+      "15DZ",
+      "30",
+      "DZ"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "BTR-UNS-36",
+      "BUTTER UNSALTED 1LB",
+      "36/1LB",
+      "72",
+      "LB"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "",
+      "OIL OLIVE PURE 5L",
+      "3/5L",
+      "2",
+      "CS"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "VIN-RW-5L",
+      "VINEGAR RED WINE 5L",
+      "5L",
+      "1",
+      "EA"
+     ],
+     [
+      "BV-55821",
+      "Bramble & Vine - Eastside",
+      "09/28/2026",
+      "CHS-PRM-2",
+      "CHEESE PARMIGIANO REGG 24M",
+      "2/2.5KG",
+      "1",
+      "CS"
+     ],
+     [],
+     [
+      "SYNTHETIC DEMO DATA - fictional businesses, not real customers"
+     ]
+    ]
+   }
+  },
+  {
+   "file": "chat_export_2026-09-25.txt",
+   "format": "Chat",
+   "received": "2026-09-25T07:12",
+   "received_source": "chat timestamp",
+   "customer": {
+    "as_written": "Casa Verde",
+    "sender_email": "",
+    "account_id": "ACC-071",
+    "method": "known alias",
+    "confidence": 0.98,
+    "best_guess": null,
+    "domain_account": null
+   },
+   "po_number": "",
+   "lines": [
+    {
+     "as_written": "fryer oil",
+     "qty_written": "4",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CAN-FRY-20"
+     ],
+     "inferred": false,
+     "qty": 4,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CAN-FRY-20",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Canola frying oil 20 L",
+     "sell_unit": "jug",
+     "pack": "20 L jug",
+     "candidate_names": {},
+     "unit_price": 46.5,
+     "line_total": 186.0
+    },
+    {
+     "as_written": "12oz cups",
+     "qty_written": "2 cs",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CUP-12-1K"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CUP-12-1K",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "Hot cups 12 oz, 1,000 ct",
+     "sell_unit": "case",
+     "pack": "1,000 ct",
+     "candidate_names": {},
+     "unit_price": 64.0,
+     "line_total": 128.0
+    },
+    {
+     "as_written": "lids to match",
+     "qty_written": "2",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "LID-12-1K"
+     ],
+     "inferred": true,
+     "qty": 2,
+     "unit_note": "quantity inferred by Claude from context, not written by the customer",
+     "source": "document",
+     "sku": "LID-12-1K",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Lids for 12 oz hot cups, 1,000 ct",
+     "sell_unit": "case",
+     "pack": "1,000 ct",
+     "candidate_names": {},
+     "unit_price": 38.0,
+     "line_total": 76.0
+    },
+    {
+     "as_written": "large gloves",
+     "qty_written": "1 box",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "GLV-NIT-L"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "GLV-NIT-L",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 4,
+     "product": "Nitrile gloves, large, box of 100",
+     "sell_unit": "box",
+     "pack": "100 ct box",
+     "candidate_names": {},
+     "unit_price": 9.2,
+     "line_total": 9.2
+    }
+   ],
+   "requested_as_written": "monday",
+   "delivery_instructions": "",
+   "notes_for_reviewer": [
+    "Fryer oil corrected from 3 to 4; final quantity used.",
+    "Lid quantity not written; inferred 2 from 'to match' the 2 cs of cups."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 399.2,
+   "requested_date": "2026-09-28",
+   "delivery_date": "2026-09-28",
+   "delivery_note": "",
+   "reasons": [],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-071 Casa Verde Taqueria (matched by: known alias)"
+    },
+    {
+     "ok": true,
+     "text": "4 of 4 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "info": true,
+     "text": "1 quantity not written by the customer but inferred from context ('lids to match'), labelled on the line"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Standard price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "$399.20 meets the $150.00 account minimum"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Mon 28 Sep is on this account's route (Mon, Thu)"
+    }
+   ],
+   "notes": [
+    "Driver: Rear entrance delivery",
+    "Collect payment on delivery (COD)"
+   ],
+   "status": "AUTO-APPROVED",
+   "account": {
+    "id": "ACC-071",
+    "name": "Casa Verde Taqueria",
+    "tier": "Standard",
+    "delivery_days": "Mon, Thu",
+    "min_order": 150.0,
+    "payment_terms": "COD",
+    "rules": [
+     "Rear entrance delivery"
+    ],
+    "po_required": false,
+    "aliases": "Casa Verde"
+   },
+   "extraction": {
+    "file": "chat_export_2026-09-25.txt",
+    "customer_as_written": "Casa Verde",
+    "contact_name": "Sofi",
+    "sender_email": "",
+    "po_number": "",
+    "requested_date_as_written": "monday",
+    "requested_date": "2026-09-28",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "fryer oil",
+      "quantity": 4,
+      "unit_as_written": "",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CAN-FRY-20"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "12oz cups",
+      "quantity": 2,
+      "unit_as_written": "cs",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CUP-12-1K"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "lids to match",
+      "quantity": 2,
+      "unit_as_written": "",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "LID-12-1K"
+      ],
+      "quantity_inferred": true
+     },
+     {
+      "text_as_written": "large gloves",
+      "quantity": 1,
+      "unit_as_written": "box",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "GLV-NIT-L"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "",
+    "notes_for_reviewer": [
+     "Fryer oil corrected from 3 to 4; final quantity used.",
+     "Lid quantity not written; inferred 2 from 'to match' the 2 cs of cups."
+    ]
+   },
+   "id": "ORD-0006",
+   "source": {
+    "raw": "[25/09/2026, 07:12] Sofi (Casa Verde): morning!! 🌮\n[25/09/2026, 07:12] Sofi (Casa Verde): can we get 3 fryer oil, 2 cs 12oz cups + lids to match, 1 box large gloves\n[25/09/2026, 07:13] Sofi (Casa Verde): for monday pls 🙏\n[25/09/2026, 07:20] Sofi (Casa Verde): actually make it 4 fryer oil, busy weekend\n"
+   }
+  },
+  {
+   "file": "email_2026-09-25_0814.eml",
+   "format": "Email",
+   "received": "2026-09-25T08:14",
+   "received_source": "email header",
+   "customer": {
+    "as_written": "Marigold Row Café",
+    "sender_email": "jess@marigoldrow.example",
+    "account_id": "ACC-045",
+    "method": "exact name + sender's email domain",
+    "confidence": 1.0,
+    "best_guess": null,
+    "domain_account": "ACC-045"
+   },
+   "po_number": "",
+   "lines": [
+    {
+     "as_written": "butter",
+     "qty_written": "2 cases",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "BTR-UNS-36",
+      "BTR-SAL-36"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": null,
+     "method": "wording fits several products",
+     "confidence": 0.5,
+     "candidates": [
+      "BTR-SAL-36",
+      "BTR-UNS-36"
+     ],
+     "rejected_skus": [],
+     "history_hint": "Order history points to Unsalted butter 1 lb (BTR-UNS-36): it was on 3 of their last 3 orders, the other option on none.",
+     "n": 1,
+     "product": "",
+     "sell_unit": "case",
+     "pack": "",
+     "candidate_names": {
+      "BTR-SAL-36": "Salted butter 1 lb",
+      "BTR-UNS-36": "Unsalted butter 1 lb"
+     },
+     "unit_price": null,
+     "line_total": 0.0
+    },
+    {
+     "as_written": "heavy cream",
+     "qty_written": "2",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CRM-HVY-12"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CRM-HVY-12",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "Heavy cream 36% 1 qt",
+     "sell_unit": "case",
+     "pack": "12 x 1 qt",
+     "candidate_names": {},
+     "unit_price": 54.0,
+     "line_total": 108.0
+    },
+    {
+     "as_written": "large eggs",
+     "qty_written": "1 case",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "EGG-LG-15"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "EGG-LG-15",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Large eggs, 15 dozen",
+     "sell_unit": "case",
+     "pack": "15 dozen",
+     "candidate_names": {},
+     "unit_price": 52.5,
+     "line_total": 52.5
+    },
+    {
+     "as_written": "icing sugar",
+     "qty_written": "1 bag",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "SUG-IC-10"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "SUG-IC-10",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 4,
+     "product": "Icing sugar 10 kg",
+     "sell_unit": "bag",
+     "pack": "10 kg bag",
+     "candidate_names": {},
+     "unit_price": 18.7,
+     "line_total": 18.7
+    }
+   ],
+   "requested_as_written": "Wednesday",
+   "delivery_instructions": "",
+   "notes_for_reviewer": [
+    "Butter type (salted or unsalted) not specified."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 179.2,
+   "requested_date": "2026-09-30",
+   "delivery_date": "2026-09-30",
+   "delivery_note": "",
+   "reasons": [
+    {
+     "code": "AMBIGUOUS_PRODUCT",
+     "label": "ambiguous product",
+     "text": "'butter' could be Salted butter 1 lb (BTR-SAL-36) or Unsalted butter 1 lb (BTR-UNS-36). Order history points to Unsalted butter 1 lb (BTR-UNS-36): it was on 3 of their last 3 orders, the other option on none.",
+     "action": "Confirm with the customer; the answer is saved as this account's phrase so it's automatic next time."
+    },
+    {
+     "code": "PO_MISSING",
+     "label": "PO missing",
+     "text": "Marigold Row Café requires a PO number on every order and none was given.",
+     "action": "Reply asking for the PO number; release once it's added."
+    }
+   ],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-045 Marigold Row Café (matched by: exact name + sender's email domain)"
+    },
+    {
+     "ok": false,
+     "text": "3 of 4 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": false,
+     "text": "PO number missing (this account requires one)"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Standard price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "$179.20 meets the $150.00 account minimum (1 line not priced yet)"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Wed 30 Sep is on this account's route (Mon, Wed, Fri)"
+    }
+   ],
+   "notes": [],
+   "status": "NEEDS REVIEW",
+   "account": {
+    "id": "ACC-045",
+    "name": "Marigold Row Café",
+    "tier": "Standard",
+    "delivery_days": "Mon, Wed, Fri",
+    "min_order": 150.0,
+    "payment_terms": "Net 14",
+    "rules": [
+     "Requires PO number"
+    ],
+    "po_required": true,
+    "aliases": "Marigold Row; Marigold Row Cafe"
+   },
+   "extraction": {
+    "file": "email_2026-09-25_0814.eml",
+    "customer_as_written": "Marigold Row Café",
+    "contact_name": "Jess",
+    "sender_email": "jess@marigoldrow.example",
+    "po_number": "",
+    "requested_date_as_written": "Wednesday",
+    "requested_date": "2026-09-30",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "butter",
+      "quantity": 2,
+      "unit_as_written": "cases",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "BTR-UNS-36",
+       "BTR-SAL-36"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "heavy cream",
+      "quantity": 2,
+      "unit_as_written": "",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CRM-HVY-12"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "large eggs",
+      "quantity": 1,
+      "unit_as_written": "case",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "EGG-LG-15"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "icing sugar",
+      "quantity": 1,
+      "unit_as_written": "bag",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "SUG-IC-10"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "",
+    "notes_for_reviewer": [
+     "Butter type (salted or unsalted) not specified."
+    ]
+   },
+   "id": "ORD-0007",
+   "source": {
+    "raw": "From: Jess <jess@marigoldrow.example>\nTo: orders@bayline.example\nDate: Fri, 25 Sep 2026 08:14:37 -0400\nSubject: order for wednesday\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nHi there,\n\nCould we please get 2 cases of butter, 2 heavy cream, 1 case of large eggs and a bag of icing sugar for Wednesday?\n\nThanks so much!\nJess\nMarigold Row Café\n"
+   }
+  },
+  {
+   "file": "email_2026-09-25_0902.eml",
+   "format": "Email",
+   "received": "2026-09-25T09:02",
+   "received_source": "email header",
+   "customer": {
+    "as_written": "Pier Road Kitchen",
+    "sender_email": "dave.pierroad@mailbox.example",
+    "account_id": null,
+    "method": "",
+    "confidence": 0.0,
+    "best_guess": {
+     "id": "ACC-094",
+     "name": "Pierside Kitchen & Bar",
+     "score": 0.6
+    },
+    "domain_account": null
+   },
+   "po_number": "",
+   "lines": [
+    {
+     "as_written": "large eggs",
+     "qty_written": "6 cs",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "EGG-LG-15"
+     ],
+     "inferred": false,
+     "qty": 6,
+     "unit_note": "",
+     "source": "document",
+     "sku": "EGG-LG-15",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Large eggs, 15 dozen",
+     "sell_unit": "case",
+     "pack": "15 dozen",
+     "candidate_names": {},
+     "unit_price": 52.5,
+     "line_total": 315.0
+    },
+    {
+     "as_written": "AP flour",
+     "qty_written": "3 bags",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "FLR-AP-25"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "FLR-AP-25",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "All-purpose flour 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 21.4,
+     "line_total": 64.2
+    },
+    {
+     "as_written": "canola frying oil",
+     "qty_written": "2",
+     "item_code": "",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CAN-FRY-20"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CAN-FRY-20",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Canola frying oil 20 L",
+     "sell_unit": "jug",
+     "pack": "20 L jug",
+     "candidate_names": {},
+     "unit_price": 46.5,
+     "line_total": 93.0
+    }
+   ],
+   "requested_as_written": "next Tuesday",
+   "delivery_instructions": "Customer would like to pay on delivery for now.",
+   "notes_for_reviewer": [
+    "New customer, first order; likely no existing account.",
+    "Referred by Harbor St Bistro (Marco), which is not the customer.",
+    "Requests pay on delivery."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 472.2,
+   "requested_date": "2026-09-29",
+   "delivery_date": "",
+   "delivery_note": "",
+   "reasons": [
+    {
+     "code": "UNKNOWN_CUSTOMER",
+     "label": "unknown customer",
+     "text": "'Pier Road Kitchen' (dave.pierroad@mailbox.example) is not one of the 120 accounts. The closest account name, Pierside Kitchen & Bar, is only a 60% name match: too weak to trust.",
+     "action": "Set up a new account (credit check, price tier, delivery days) or link this sender to an existing account."
+    }
+   ],
+   "checks": [
+    {
+     "ok": false,
+     "text": "Customer not found in the account list"
+    },
+    {
+     "ok": true,
+     "text": "3 of 3 lines matched to a catalog SKU and whole selling units"
+    }
+   ],
+   "notes": [],
+   "status": "NEEDS REVIEW",
+   "account": null,
+   "extraction": {
+    "file": "email_2026-09-25_0902.eml",
+    "customer_as_written": "Pier Road Kitchen",
+    "contact_name": "Dave",
+    "sender_email": "dave.pierroad@mailbox.example",
+    "po_number": "",
+    "requested_date_as_written": "next Tuesday",
+    "requested_date": "2026-09-29",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "large eggs",
+      "quantity": 6,
+      "unit_as_written": "cs",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "EGG-LG-15"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "AP flour",
+      "quantity": 3,
+      "unit_as_written": "bags",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "FLR-AP-25"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "canola frying oil",
+      "quantity": 2,
+      "unit_as_written": "",
+      "item_code_on_document": "",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CAN-FRY-20"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "Customer would like to pay on delivery for now.",
+    "notes_for_reviewer": [
+     "New customer, first order; likely no existing account.",
+     "Referred by Harbor St Bistro (Marco), which is not the customer.",
+     "Requests pay on delivery."
+    ]
+   },
+   "id": "ORD-0008",
+   "source": {
+    "raw": "From: Dave <dave.pierroad@mailbox.example>\nTo: orders@bayline.example\nDate: Fri, 25 Sep 2026 09:02:51 -0400\nSubject: new customer - first order?\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nHi,\n\nWe just opened Pier Road Kitchen down on the waterfront. Marco at Harbor St Bistro said you're the people to call.\nCould you do 6 cs large eggs, 3 bags AP flour and 2 canola frying oil for next Tuesday?\n\nHappy to pay on delivery for now.\n\nDave\nPier Road Kitchen\n"
+   }
+  },
+  {
+   "file": "PO_LGH-20931.pdf",
+   "format": "PDF",
+   "received": "2026-09-25T10:00",
+   "received_source": "processed",
+   "customer": {
+    "as_written": "Lakeside Grand Hotel",
+    "sender_email": "",
+    "account_id": "ACC-052",
+    "method": "exact name",
+    "confidence": 1.0,
+    "best_guess": null,
+    "domain_account": null
+   },
+   "po_number": "LGH-PO-20931",
+   "lines": [
+    {
+     "as_written": "Extra Virgin Olive Oil 12x1L",
+     "qty_written": "6 CS",
+     "item_code": "OLV-EV-1L",
+     "price_on_document": 106.2,
+     "claude_candidates": [
+      "OLV-EV-1L"
+     ],
+     "inferred": false,
+     "qty": 6,
+     "unit_note": "",
+     "source": "document",
+     "sku": "OLV-EV-1L",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Extra virgin olive oil 1 L",
+     "sell_unit": "case",
+     "pack": "12 x 1 L",
+     "candidate_names": {},
+     "unit_price": 106.2,
+     "line_total": 637.2
+    },
+    {
+     "as_written": "All Purpose Flour 25kg",
+     "qty_written": "8 BAG",
+     "item_code": "FLR-AP-25",
+     "price_on_document": 19.26,
+     "claude_candidates": [
+      "FLR-AP-25"
+     ],
+     "inferred": false,
+     "qty": 8,
+     "unit_note": "",
+     "source": "document",
+     "sku": "FLR-AP-25",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "All-purpose flour 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 19.26,
+     "line_total": 154.08
+    },
+    {
+     "as_written": "Granulated Sugar 25kg",
+     "qty_written": "4 BAG",
+     "item_code": "SUG-GR-25",
+     "price_on_document": 28.08,
+     "claude_candidates": [
+      "SUG-GR-25"
+     ],
+     "inferred": false,
+     "qty": 4,
+     "unit_note": "",
+     "source": "document",
+     "sku": "SUG-GR-25",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Granulated sugar 25 kg",
+     "sell_unit": "bag",
+     "pack": "25 kg bag",
+     "candidate_names": {},
+     "unit_price": 28.08,
+     "line_total": 112.32
+    },
+    {
+     "as_written": "Heavy Cream 36% 12x1qt",
+     "qty_written": "10 CS",
+     "item_code": "CRM-HVY-12",
+     "price_on_document": 48.6,
+     "claude_candidates": [
+      "CRM-HVY-12"
+     ],
+     "inferred": false,
+     "qty": 10,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CRM-HVY-12",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 4,
+     "product": "Heavy cream 36% 1 qt",
+     "sell_unit": "case",
+     "pack": "12 x 1 qt",
+     "candidate_names": {},
+     "unit_price": 48.6,
+     "line_total": 486.0
+    },
+    {
+     "as_written": "Eggs, Large, 15 doz",
+     "qty_written": "6 CS",
+     "item_code": "EGG-LG-15",
+     "price_on_document": 47.25,
+     "claude_candidates": [
+      "EGG-LG-15"
+     ],
+     "inferred": false,
+     "qty": 6,
+     "unit_note": "",
+     "source": "document",
+     "sku": "EGG-LG-15",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 5,
+     "product": "Large eggs, 15 dozen",
+     "sell_unit": "case",
+     "pack": "15 dozen",
+     "candidate_names": {},
+     "unit_price": 47.25,
+     "line_total": 283.5
+    },
+    {
+     "as_written": "Butter, Unsalted 36x1lb",
+     "qty_written": "4 CS",
+     "item_code": "BTR-UNS-36",
+     "price_on_document": 127.8,
+     "claude_candidates": [
+      "BTR-UNS-36"
+     ],
+     "inferred": false,
+     "qty": 4,
+     "unit_note": "",
+     "source": "document",
+     "sku": "BTR-UNS-36",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 6,
+     "product": "Unsalted butter 1 lb",
+     "sell_unit": "case",
+     "pack": "36 x 1 lb",
+     "candidate_names": {},
+     "unit_price": 127.8,
+     "line_total": 511.2
+    },
+    {
+     "as_written": "Espresso Beans 6x1kg",
+     "qty_written": "3 CS",
+     "item_code": "COF-ESP-6",
+     "price_on_document": 118.8,
+     "claude_candidates": [
+      "COF-ESP-6"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "COF-ESP-6",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 7,
+     "product": "Espresso beans 6 x 1 kg",
+     "sell_unit": "case",
+     "pack": "6 x 1 kg",
+     "candidate_names": {},
+     "unit_price": 118.8,
+     "line_total": 356.4
+    },
+    {
+     "as_written": "Dinner Napkins 2-ply 3000ct",
+     "qty_written": "2 CS",
+     "item_code": "NAP-DIN-3K",
+     "price_on_document": 26.1,
+     "claude_candidates": [
+      "NAP-DIN-3K"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "NAP-DIN-3K",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 8,
+     "product": "Dinner napkins 2-ply, 3,000 ct",
+     "sell_unit": "case",
+     "pack": "3,000 ct",
+     "candidate_names": {},
+     "unit_price": 26.1,
+     "line_total": 52.2
+    },
+    {
+     "as_written": "Basmati Rice 10kg",
+     "qty_written": "5 BAG",
+     "item_code": "RCE-BAS-10",
+     "price_on_document": 17.46,
+     "claude_candidates": [
+      "RCE-BAS-10"
+     ],
+     "inferred": false,
+     "qty": 5,
+     "unit_note": "",
+     "source": "document",
+     "sku": "RCE-BAS-10",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 9,
+     "product": "Basmati rice 10 kg",
+     "sell_unit": "bag",
+     "pack": "10 kg bag",
+     "candidate_names": {},
+     "unit_price": 17.46,
+     "line_total": 87.3
+    },
+    {
+     "as_written": "Fior di Latte 12x250g",
+     "qty_written": "3 CS",
+     "item_code": "CHS-MOZ-FD",
+     "price_on_document": 43.2,
+     "claude_candidates": [
+      "CHS-MOZ-FD"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CHS-MOZ-FD",
+     "method": "SKU printed on the document",
+     "confidence": 1.0,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 10,
+     "product": "Fresh mozzarella fior di latte 250 g",
+     "sell_unit": "case",
+     "pack": "12 x 250 g",
+     "candidate_names": {},
+     "unit_price": 43.2,
+     "line_total": 129.6
+    }
+   ],
+   "requested_as_written": "29-Sep-2026",
+   "delivery_instructions": "Ship to Receiving Dock B, 1 Shoreline Drive. Split pallets, max 20 cases per pallet; no forklift at Dock B. Receiving hours 07:00-11:00. Reference PO number on all invoices.",
+   "notes_for_reviewer": [
+    "PO total stated as 2,809.80 USD; line extensions add up to the same.",
+    "Terms Net 45 on the PO."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 2809.8,
+   "requested_date": "2026-09-29",
+   "delivery_date": "2026-09-29",
+   "delivery_note": "",
+   "reasons": [],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-052 Lakeside Grand Hotel (matched by: exact name)"
+    },
+    {
+     "ok": true,
+     "text": "10 of 10 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "text": "PO number LGH-PO-20931 present (this account requires one)"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Key account price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "Prices printed on the document match our price list on 10 of 10 lines"
+    },
+    {
+     "ok": true,
+     "text": "$2,809.80 meets the $500.00 account minimum"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Tue 29 Sep is on this account's route (Mon-Fri)"
+    }
+   ],
+   "notes": [
+    "Split pallets: 51 units → 3 pallets of max 20",
+    "Driver: Receiving dock 7-11am"
+   ],
+   "status": "AUTO-APPROVED",
+   "account": {
+    "id": "ACC-052",
+    "name": "Lakeside Grand Hotel",
+    "tier": "Key account",
+    "delivery_days": "Mon-Fri",
+    "min_order": 500.0,
+    "payment_terms": "Net 45",
+    "rules": [
+     "Requires PO number",
+     "Always split pallets (max 20 cases)",
+     "Receiving dock 7-11am"
+    ],
+    "po_required": true,
+    "aliases": "Lakeside Grand; LGH Food & Beverage"
+   },
+   "extraction": {
+    "file": "PO_LGH-20931.pdf",
+    "customer_as_written": "Lakeside Grand Hotel",
+    "contact_name": "",
+    "sender_email": "",
+    "po_number": "LGH-PO-20931",
+    "requested_date_as_written": "29-Sep-2026",
+    "requested_date": "2026-09-29",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "Extra Virgin Olive Oil 12x1L",
+      "quantity": 6,
+      "unit_as_written": "CS",
+      "item_code_on_document": "OLV-EV-1L",
+      "unit_price_on_document": 106.2,
+      "sku_candidates": [
+       "OLV-EV-1L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "All Purpose Flour 25kg",
+      "quantity": 8,
+      "unit_as_written": "BAG",
+      "item_code_on_document": "FLR-AP-25",
+      "unit_price_on_document": 19.26,
+      "sku_candidates": [
+       "FLR-AP-25"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Granulated Sugar 25kg",
+      "quantity": 4,
+      "unit_as_written": "BAG",
+      "item_code_on_document": "SUG-GR-25",
+      "unit_price_on_document": 28.08,
+      "sku_candidates": [
+       "SUG-GR-25"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Heavy Cream 36% 12x1qt",
+      "quantity": 10,
+      "unit_as_written": "CS",
+      "item_code_on_document": "CRM-HVY-12",
+      "unit_price_on_document": 48.6,
+      "sku_candidates": [
+       "CRM-HVY-12"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Eggs, Large, 15 doz",
+      "quantity": 6,
+      "unit_as_written": "CS",
+      "item_code_on_document": "EGG-LG-15",
+      "unit_price_on_document": 47.25,
+      "sku_candidates": [
+       "EGG-LG-15"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Butter, Unsalted 36x1lb",
+      "quantity": 4,
+      "unit_as_written": "CS",
+      "item_code_on_document": "BTR-UNS-36",
+      "unit_price_on_document": 127.8,
+      "sku_candidates": [
+       "BTR-UNS-36"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Espresso Beans 6x1kg",
+      "quantity": 3,
+      "unit_as_written": "CS",
+      "item_code_on_document": "COF-ESP-6",
+      "unit_price_on_document": 118.8,
+      "sku_candidates": [
+       "COF-ESP-6"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Dinner Napkins 2-ply 3000ct",
+      "quantity": 2,
+      "unit_as_written": "CS",
+      "item_code_on_document": "NAP-DIN-3K",
+      "unit_price_on_document": 26.1,
+      "sku_candidates": [
+       "NAP-DIN-3K"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Basmati Rice 10kg",
+      "quantity": 5,
+      "unit_as_written": "BAG",
+      "item_code_on_document": "RCE-BAS-10",
+      "unit_price_on_document": 17.46,
+      "sku_candidates": [
+       "RCE-BAS-10"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Fior di Latte 12x250g",
+      "quantity": 3,
+      "unit_as_written": "CS",
+      "item_code_on_document": "CHS-MOZ-FD",
+      "unit_price_on_document": 43.2,
+      "sku_candidates": [
+       "CHS-MOZ-FD"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "Ship to Receiving Dock B, 1 Shoreline Drive. Split pallets, max 20 cases per pallet; no forklift at Dock B. Receiving hours 07:00-11:00. Reference PO number on all invoices.",
+    "notes_for_reviewer": [
+     "PO total stated as 2,809.80 USD; line extensions add up to the same.",
+     "Terms Net 45 on the PO."
+    ]
+   },
+   "id": "ORD-0009",
+   "source": {
+    "raw": "LAKESIDE GRAND HOTEL\nFood & Beverage Purchasing · 1 Shoreline Drive\nPURCHASE ORDER\nPO Number LGH-PO-20931\nPO Date 24-Sep-2026\nDelivery Date 29-Sep-2026\nTerms Net 45\nVENDOR\nBayline Provisions\nWholesale Foodservice\norders@bayline.example\nSHIP TO\nLakeside Grand Hotel\nReceiving Dock B\n1 Shoreline Drive\nBILL TO\nLakeside Grand Hotel\nAccounts Payable\nap@lakesidegrand.example\n# Vendor Item Description Qty UOM Unit Price Extended\n1 OLV-EV-1L Extra Virgin Olive Oil 12x1L 6 CS 106.20 637.20\n2 FLR-AP-25 All Purpose Flour 25kg 8 BAG 19.26 154.08\n3 SUG-GR-25 Granulated Sugar 25kg 4 BAG 28.08 112.32\n4 CRM-HVY-12 Heavy Cream 36% 12x1qt 10 CS 48.60 486.00\n5 EGG-LG-15 Eggs, Large, 15 doz 6 CS 47.25 283.50\n6 BTR-UNS-36 Butter, Unsalted 36x1lb 4 CS 127.80 511.20\n7 COF-ESP-6 Espresso Beans 6x1kg 3 CS 118.80 356.40\n8 NAP-DIN-3K Dinner Napkins 2-ply 3000ct 2 CS 26.10 52.20\n9 RCE-BAS-10 Basmati Rice 10kg 5 BAG 17.46 87.30\n10 CHS-MOZ-FD Fior di Latte 12x250g 3 CS 43.20 129.60\nPO TOTAL (USD) 2,809.80\nNotes: Split pallets please - max 20 cases per pallet, no forklift at Dock B. Receiving hours 07:00-11:00. Please\nreference PO number on all invoices.\nApproved by: F&B Purchasing Office\nSYNTHETIC DEMO DATA - fictional businesses, not real customers",
+    "preview": "inputs/PO_LGH-20931.png"
+   }
+  },
+  {
+   "file": "RR-2209_order.pdf",
+   "format": "PDF",
+   "received": "2026-09-25T10:00",
+   "received_source": "processed",
+   "customer": {
+    "as_written": "Rosemary & Rye",
+    "sender_email": "",
+    "account_id": "ACC-088",
+    "method": "known alias",
+    "confidence": 0.98,
+    "best_guess": null,
+    "domain_account": null
+   },
+   "po_number": "RR-2209",
+   "lines": [
+    {
+     "as_written": "Olive oil, extra virgin, 3L tins",
+     "qty_written": "2 cases",
+     "item_code": "R-101",
+     "price_on_document": null,
+     "claude_candidates": [
+      "OLV-EV-3L"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "OLV-EV-3L",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 1,
+     "product": "Extra virgin olive oil 3 L tin",
+     "sell_unit": "case",
+     "pack": "4 x 3 L",
+     "candidate_names": {},
+     "unit_price": 104.0,
+     "line_total": 208.0
+    },
+    {
+     "as_written": "Arborio rice 5kg",
+     "qty_written": "4 bags",
+     "item_code": "R-114",
+     "price_on_document": null,
+     "claude_candidates": [
+      "RCE-ARB-5"
+     ],
+     "inferred": false,
+     "qty": 4,
+     "unit_note": "",
+     "source": "document",
+     "sku": "RCE-ARB-5",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 2,
+     "product": "Arborio rice 5 kg",
+     "sell_unit": "bag",
+     "pack": "5 kg bag",
+     "candidate_names": {},
+     "unit_price": 16.8,
+     "line_total": 67.2
+    },
+    {
+     "as_written": "Balsamic vinegar 5L",
+     "qty_written": "1",
+     "item_code": "R-120",
+     "price_on_document": null,
+     "claude_candidates": [
+      "VIN-BAL-5L"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "VIN-BAL-5L",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 3,
+     "product": "Balsamic vinegar of Modena 5 L",
+     "sell_unit": "jug",
+     "pack": "5 L jug",
+     "candidate_names": {},
+     "unit_price": 38.0,
+     "line_total": 38.0
+    },
+    {
+     "as_written": "Penne rigate",
+     "qty_written": "3 cases",
+     "item_code": "R-126",
+     "price_on_document": null,
+     "claude_candidates": [
+      "PST-PEN-5"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "PST-PEN-5",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 4,
+     "product": "Penne rigate 5 kg",
+     "sell_unit": "case",
+     "pack": "5 kg case",
+     "candidate_names": {},
+     "unit_price": 12.6,
+     "line_total": 37.8
+    },
+    {
+     "as_written": "Parmesan (24 mo)",
+     "qty_written": "1 case",
+     "item_code": "R-131",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CHS-PRM-2"
+     ],
+     "inferred": false,
+     "qty": 1,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CHS-PRM-2",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 5,
+     "product": "Parmigiano Reggiano 24-month wedges",
+     "sell_unit": "case",
+     "pack": "2 x 2.5 kg",
+     "candidate_names": {},
+     "unit_price": 96.0,
+     "line_total": 96.0
+    },
+    {
+     "as_written": "Cling film 18\"",
+     "qty_written": "2 rolls",
+     "item_code": "R-140",
+     "price_on_document": null,
+     "claude_candidates": [
+      "FILM-18"
+     ],
+     "inferred": false,
+     "qty": 2,
+     "unit_note": "",
+     "source": "document",
+     "sku": "FILM-18",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 6,
+     "product": "Cling film 18 in x 2,000 ft",
+     "sell_unit": "roll",
+     "pack": "1 roll",
+     "candidate_names": {},
+     "unit_price": 26.0,
+     "line_total": 52.0
+    },
+    {
+     "as_written": "Gloves, nitrile, medium",
+     "qty_written": "4 boxes",
+     "item_code": "R-150",
+     "price_on_document": null,
+     "claude_candidates": [
+      "GLV-NIT-M"
+     ],
+     "inferred": false,
+     "qty": 4,
+     "unit_note": "",
+     "source": "document",
+     "sku": "GLV-NIT-M",
+     "method": "Claude's reading, confirmed by spelling match",
+     "confidence": 0.93,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 7,
+     "product": "Nitrile gloves, medium, box of 100",
+     "sell_unit": "box",
+     "pack": "100 ct box",
+     "candidate_names": {},
+     "unit_price": 9.2,
+     "line_total": 36.8
+    },
+    {
+     "as_written": "Heavy cream",
+     "qty_written": "3 cases",
+     "item_code": "R-155",
+     "price_on_document": null,
+     "claude_candidates": [
+      "CRM-HVY-12"
+     ],
+     "inferred": false,
+     "qty": 3,
+     "unit_note": "",
+     "source": "document",
+     "sku": "CRM-HVY-12",
+     "method": "catalog alias",
+     "confidence": 0.97,
+     "candidates": [],
+     "rejected_skus": [],
+     "n": 8,
+     "product": "Heavy cream 36% 1 qt",
+     "sell_unit": "case",
+     "pack": "12 x 1 qt",
+     "candidate_names": {},
+     "unit_price": 54.0,
+     "line_total": 162.0
+    }
+   ],
+   "requested_as_written": "Required by: 30/09/2026",
+   "delivery_instructions": "Order is for a wedding on 3 October. No substitutions. If anything is short, call the kitchen before sending.",
+   "notes_for_reviewer": [
+    "Item codes R-1xx are the customer's own codes.",
+    "Date read as DD/MM/YYYY (30/09/2026).",
+    "No substitutions allowed; call kitchen if any item is short.",
+    "Balsamic line has no unit written."
+   ],
+   "unmatched_adjustments": [],
+   "subtotal": 697.8,
+   "requested_date": "2026-09-30",
+   "delivery_date": "2026-09-30",
+   "delivery_note": "",
+   "reasons": [],
+   "checks": [
+    {
+     "ok": true,
+     "text": "Customer matched to ACC-088 Rosemary & Rye Catering Co. (matched by: known alias)"
+    },
+    {
+     "ok": true,
+     "text": "8 of 8 lines matched to a catalog SKU and whole selling units"
+    },
+    {
+     "ok": true,
+     "text": "Priced from the Standard price list, never from the document"
+    },
+    {
+     "ok": true,
+     "text": "$697.80 meets the $250.00 account minimum"
+    },
+    {
+     "ok": true,
+     "text": "Delivery Wed 30 Sep is on this account's route (Wed, Fri)"
+    }
+   ],
+   "notes": [
+    "No substitutions: pick exactly as ordered; call the customer if anything is short",
+    "Driver: Call on arrival"
+   ],
+   "status": "AUTO-APPROVED",
+   "account": {
+    "id": "ACC-088",
+    "name": "Rosemary & Rye Catering Co.",
+    "tier": "Standard",
+    "delivery_days": "Wed, Fri",
+    "min_order": 250.0,
+    "payment_terms": "Net 30",
+    "rules": [
+     "No substitutions",
+     "Call on arrival"
+    ],
+    "po_required": false,
+    "aliases": "Rosemary & Rye; Rosemary and Rye; R&R Catering"
+   },
+   "extraction": {
+    "file": "RR-2209_order.pdf",
+    "customer_as_written": "Rosemary & Rye",
+    "contact_name": "",
+    "sender_email": "",
+    "po_number": "RR-2209",
+    "requested_date_as_written": "Required by: 30/09/2026",
+    "requested_date": "2026-09-30",
+    "repeat_previous_order": false,
+    "repeat_adjustments": [],
+    "line_items": [
+     {
+      "text_as_written": "Olive oil, extra virgin, 3L tins",
+      "quantity": 2,
+      "unit_as_written": "cases",
+      "item_code_on_document": "R-101",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "OLV-EV-3L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Arborio rice 5kg",
+      "quantity": 4,
+      "unit_as_written": "bags",
+      "item_code_on_document": "R-114",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "RCE-ARB-5"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Balsamic vinegar 5L",
+      "quantity": 1,
+      "unit_as_written": "",
+      "item_code_on_document": "R-120",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "VIN-BAL-5L"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Penne rigate",
+      "quantity": 3,
+      "unit_as_written": "cases",
+      "item_code_on_document": "R-126",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "PST-PEN-5"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Parmesan (24 mo)",
+      "quantity": 1,
+      "unit_as_written": "case",
+      "item_code_on_document": "R-131",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CHS-PRM-2"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Cling film 18\"",
+      "quantity": 2,
+      "unit_as_written": "rolls",
+      "item_code_on_document": "R-140",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "FILM-18"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Gloves, nitrile, medium",
+      "quantity": 4,
+      "unit_as_written": "boxes",
+      "item_code_on_document": "R-150",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "GLV-NIT-M"
+      ],
+      "quantity_inferred": false
+     },
+     {
+      "text_as_written": "Heavy cream",
+      "quantity": 3,
+      "unit_as_written": "cases",
+      "item_code_on_document": "R-155",
+      "unit_price_on_document": 0,
+      "sku_candidates": [
+       "CRM-HVY-12"
+      ],
+      "quantity_inferred": false
+     }
+    ],
+    "delivery_instructions": "Order is for a wedding on 3 October. No substitutions. If anything is short, call the kitchen before sending.",
+    "notes_for_reviewer": [
+     "Item codes R-1xx are the customer's own codes.",
+     "Date read as DD/MM/YYYY (30/09/2026).",
+     "No substitutions allowed; call kitchen if any item is short.",
+     "Balsamic line has no unit written."
+    ]
+   },
+   "id": "ORD-0010",
+   "source": {
+    "raw": "ROSEMARY & RYE\ncatering & events · kitchen at 48 Mill Lane\nTo: Bayline Provisions Order No. RR-2209\nFrom: R&R kitchen Date: 24/09/2026\nRequired by: 30/09/2026\nItems\nR-101 Olive oil, extra virgin, 3L tins 2 cases\nR-114 Arborio rice 5kg 4 bags\nR-120 Balsamic vinegar 5L 1\nR-126 Penne rigate 3 cases\nR-131 Parmesan (24 mo) 1 case\nR-140 Cling film 18\" 2 rolls\nR-150 Gloves, nitrile, medium 4 boxes\nR-155 Heavy cream 3 cases\nThis order is for a wedding on 3 October - please no substitutions. If anything is short, call the kitchen\nbefore sending.\nThank you!\nSYNTHETIC DEMO DATA - fictional businesses, not real customers",
+    "preview": "inputs/RR-2209_order.png"
+   }
+  }
+ ]
+}

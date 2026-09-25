@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Order Intake Demo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%274%27 y=%273%27 width=%2724%27 height=%2726%27 rx=%273%27 fill=%27%2316232c%27/%3E%3Cpath d=%27M9 11h14M9 16h14M9 21h8%27 stroke=%27%23fff%27 stroke-width=%272.4%27/%3E%3C/svg%3E">
+<meta name="description" content="Working demo: Claude reads orders in any format; code applies each account's rules and prices.">
+<script>try { var t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("theme");
+  if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/archivo@5/wdth.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5/500.css">
+<style>
+  :root {
+    --page: #edf1f3; --surface: #ffffff; --sunk: #f5f7f8; --ink: #16232c; --muted: #56666f; --rule: #d2dbe0;
+    --accent: #2b4c7e; --accent-soft: #e3eaf4;
+    --ok: #1d7a4c; --ok-soft: #e0f1e7; --warn: #955800; --warn-soft: #fbefd6;
+    --paper: #fffef9; --paper-ink: #1d1d1b; --band: #16232c; --band-ink: #edf1f3;
+    --shadow: 0 1px 0 rgba(22, 35, 44, .06), 0 6px 18px -10px rgba(22, 35, 44, .25);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #151d23; --surface: #1c262e; --sunk: #18222a; --ink: #e3eaee; --muted: #93a3ad; --rule: #2e3b44;
+      --accent: #8fb3e3; --accent-soft: #22324a;
+      --ok: #62c592; --ok-soft: #173427; --warn: #e8ac47; --warn-soft: #3a2d14;
+      --paper: #20282f; --paper-ink: #e3eaee; --band: #0f171c; --band-ink: #e3eaee;
+      --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 8px 22px -12px rgba(0, 0, 0, .7);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #151d23; --surface: #1c262e; --sunk: #18222a; --ink: #e3eaee; --muted: #93a3ad; --rule: #2e3b44;
+    --accent: #8fb3e3; --accent-soft: #22324a;
+    --ok: #62c592; --ok-soft: #173427; --warn: #e8ac47; --warn-soft: #3a2d14;
+    --paper: #20282f; --paper-ink: #e3eaee; --band: #0f171c; --band-ink: #e3eaee;
+    --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 8px 22px -12px rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+    font: 400 16px/1.55 "Archivo Variable", system-ui, -apple-system, "Segoe UI", sans-serif; font-variation-settings: "wdth" 100; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 1180px; margin-inline: auto; padding-inline: 16px; }
+  .prose { max-width: 70ch; }
+
+  /* banner */
+  .banner { background: var(--band); color: var(--band-ink); font-size: 14.5px; border-bottom: 1px solid var(--rule); }
+  .banner .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px; }
+  .banner p { margin: 0; flex: 1 1 340px; }
+  .banner nav { display: flex; flex-wrap: wrap; gap: 8px; }
+  .banner a, .banner button { color: var(--band-ink); border: 1px solid color-mix(in srgb, var(--band-ink) 40%, transparent);
+    border-radius: 6px; padding: 5px 10px; text-decoration: none; font: inherit; font-size: 13.5px; background: none; cursor: pointer; white-space: nowrap; }
+  .banner a:hover, .banner button:hover { background: color-mix(in srgb, var(--band-ink) 14%, transparent); }
+
+  /* hero */
+  header.hero { padding-block: 44px 8px; }
+  .kicker { color: var(--muted); font-size: 15px; margin: 0 0 12px; }
+  h1 { font-size: clamp(31px, 5.4vw, 62px); line-height: 1.02; letter-spacing: -.015em; margin: 0;
+    font-weight: 760; font-variation-settings: "wdth" 84; max-width: 15em; }
+  h1 span { display: block; text-wrap: balance; }
+  h1 .from { color: var(--muted); font-weight: 650; }
+  .lead { font-size: 18px; color: var(--muted); margin: 18px 0 0; max-width: 64ch; }
+
+  /* ticket rail: the one loud element */
+  .rail { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 30px 0 10px; padding: 0; list-style: none; }
+  .rail li { display: flex; min-width: 0; }
+  .ticket { position: relative; background: var(--paper); color: var(--paper-ink); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 12px 13px 12px; cursor: pointer; text-align: left; font: inherit; width: 100%; box-shadow: var(--shadow);
+    display: grid; grid-template-rows: auto auto 1fr auto auto auto; align-content: start; min-height: 150px; transition: transform .15s ease; }
+  .ticket::before { content: ""; position: absolute; left: 50%; top: -6px; width: 26px; height: 10px; margin-left: -13px;
+    background: var(--rule); border-radius: 2px; opacity: .9; }
+  .ticket:hover { transform: translateY(-2px); }
+  .ticket[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .t-top { display: flex; justify-content: space-between; gap: 6px; font-size: 12.5px; color: var(--muted); }
+  .t-fmt { font-weight: 650; color: var(--paper-ink); }
+  .t-who { font-weight: 650; font-size: 15.5px; line-height: 1.2; margin: 8px 0 6px; font-variation-settings: "wdth" 90; overflow-wrap: anywhere; }
+  .t-who.unknown { color: var(--warn); }
+  .t-sum { font-size: 13px; color: var(--muted); }
+  .t-perf { border-top: 2px dashed var(--rule); margin: 10px -13px 10px; }
+  .stamp { justify-self: start; font-weight: 750; font-size: 12.5px; letter-spacing: .02em; padding: 2px 8px; border: 2px solid currentColor;
+    border-radius: 4px; transform: rotate(-2.5deg); font-variation-settings: "wdth" 80; }
+  .stamp.ok { color: var(--ok); } .stamp.warn { color: var(--warn); }
+  .ticket .why { font-size: 12px; color: var(--warn); margin-top: 6px; line-height: 1.3; }
+  @media (prefers-reduced-motion: no-preference) {
+    .stamp { animation: stamp .35s cubic-bezier(.2, 1.6, .5, 1) both; animation-delay: calc(var(--i) * 70ms + 250ms); }
+    @keyframes stamp { from { opacity: 0; transform: rotate(-2.5deg) scale(1.8); } to { opacity: 1; transform: rotate(-2.5deg) scale(1); } }
+  }
+  .proof { font-size: 14.5px; color: var(--muted); margin: 14px 0 0; }
+  .proof strong { color: var(--ink); font-weight: 650; }
+
+  /* sections */
+  section { padding-block: 56px 0; }
+  h2 { font-size: clamp(23px, 3vw, 30px); line-height: 1.15; margin: 0 0 8px; font-weight: 720; font-variation-settings: "wdth" 88; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 20px; max-width: 70ch; }
+
+  /* viewer */
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tab { font: inherit; font-size: 14.5px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface);
+    color: var(--ink); cursor: pointer; }
+  .tab[aria-selected="true"] { background: var(--ink); color: var(--page); border-color: var(--ink); }
+  .viewer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 0; border: 1px solid var(--rule);
+    border-radius: 10px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+  .pane { min-width: 0; padding: 18px 20px 22px; }
+  .pane.src { background: var(--sunk); border-right: 1px solid var(--rule); }
+  .stick { position: sticky; top: 14px; }
+  .pane-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 12px; }
+  .pane-head h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .pane-head .meta { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  pre.doc { margin: 0; font: 13px/1.55 "IBM Plex Mono", ui-monospace, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere;
+    background: var(--paper); color: var(--paper-ink); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 16px;
+    max-height: calc(100vh - 150px); overflow: auto; }
+  .pdfshot { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 3px; background: #fff; box-shadow: var(--shadow); }
+  .sheet { overflow: auto; max-height: 560px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+  .sheet table { border-collapse: collapse; font: 12px/1.4 "IBM Plex Mono", ui-monospace, Menlo, monospace; color: var(--paper-ink); }
+  .sheet td { border: 1px solid var(--rule); padding: 4px 7px; white-space: nowrap; }
+  .sheet tr.hdr td { background: #44546a; color: #fff; font-weight: 500; }
+  .sheet td.rn { color: var(--muted); background: var(--sunk); text-align: right; }
+  .sheet tr.cols td { background: var(--sunk); color: var(--muted); text-align: center; }
+  .open-link { display: inline-block; margin-top: 10px; font-size: 14px; }
+
+  .status-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 14px; }
+  .status-row .stamp { animation: none; font-size: 14px; }
+  .status-row .total { margin-left: auto; font-size: 22px; font-weight: 720; font-variation-settings: "wdth" 85; }
+  .reasons { list-style: none; margin: 0 0 16px; padding: 12px 14px; background: var(--warn-soft); border-radius: 6px; }
+  .reasons li { margin: 0; padding: 0; }
+  .reasons li + li { margin-top: 10px; }
+  .reasons b { font-weight: 600; }
+  .soft { color: var(--muted); font-weight: 400; }
+  .reasons .act { display: block; font-size: 14px; color: var(--muted); margin-top: 2px; }
+
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+  .fact { background: var(--surface); padding: 9px 12px; min-width: 0; }
+  .fact .k { font-size: 12.5px; color: var(--muted); display: block; }
+  .fact .v { font-weight: 620; overflow-wrap: anywhere; }
+  .fact .w { font-size: 12.5px; color: var(--muted); display: block; overflow-wrap: anywhere; }
+  .fact.wide { grid-column: 1 / -1; }
+  .acct-rules { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--ink); white-space: nowrap; }
+
+  .lines { list-style: none; margin: 0 0 16px; padding: 0; border-top: 1px solid var(--rule); }
+  .line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .line .wrote { grid-column: 1 / -1; font: 12.5px/1.4 "IBM Plex Mono", ui-monospace, Menlo, monospace; color: var(--muted); overflow-wrap: anywhere; }
+  .line .prod { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+  .line .sku { font-weight: 500; font-size: 12.5px; color: var(--muted); letter-spacing: .02em; margin-left: 4px; white-space: nowrap; }
+  .line .money { text-align: right; white-space: nowrap; }
+  .line .money b { font-weight: 650; }
+  .line .how { grid-column: 1 / -1; font-size: 12.5px; color: var(--muted); }
+  .line.bad .prod { color: var(--warn); }
+  .repeat { font-size: 13.5px; background: var(--accent-soft); padding: 7px 11px; border-radius: 6px; margin-bottom: 10px; }
+
+  h4 { font-size: 13.5px; margin: 0 0 6px; font-weight: 700; }
+  h4 .soft { font-weight: 400; color: var(--muted); }
+  .checks, .notes { list-style: none; margin: 0 0 14px; padding: 0; font-size: 14.5px; }
+  .checks li, .notes li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; padding: 3px 0; }
+  .checks svg, .notes svg { margin-top: 4px; }
+  .i-ok { color: var(--ok); } .i-no { color: var(--warn); } .i-note { color: var(--muted); }
+  details.raw { margin-top: 6px; border-top: 1px solid var(--rule); padding-top: 10px; }
+  details.raw summary { cursor: pointer; font-size: 14px; color: var(--accent); }
+  details.raw pre { font: 12px/1.5 "IBM Plex Mono", ui-monospace, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere;
+    background: var(--sunk); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; max-height: 420px; overflow: auto; }
+
+  /* exceptions */
+  .exc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .exc article { background: var(--surface); border: 1px solid var(--rule); border-top: 4px solid var(--warn); border-radius: 6px; padding: 16px 16px 14px; min-width: 0; display: flex; flex-direction: column; }
+  .exc h3 { margin: 0; font-size: 17px; font-weight: 680; overflow-wrap: anywhere; }
+  .exc .src { font-size: 13px; color: var(--muted); margin: 2px 0 10px; overflow-wrap: anywhere; }
+  .exc ul { margin: 0 0 12px; padding: 0; list-style: none; flex: 1; }
+  .exc li + li { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--rule); }
+  .exc .what { font-size: 14.5px; }
+  .exc .act { font-size: 13.5px; color: var(--muted); margin-top: 3px; }
+  .exc .act::before { content: "Next: "; font-weight: 650; color: var(--ink); }
+  .btn { font: inherit; font-size: 14px; background: none; border: 1px solid var(--rule); color: var(--accent); border-radius: 6px; padding: 6px 11px; cursor: pointer; align-self: flex-start; }
+  .btn:hover { border-color: var(--accent); }
+
+  /* output table */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+  table.out { border-collapse: collapse; width: 100%; font-size: 14px; }
+  table.out th, table.out td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  table.out th { font-weight: 650; color: var(--muted); font-size: 13px; background: var(--sunk); }
+  table.out td.r, table.out th.r { text-align: right; }
+  table.out tbody tr { cursor: pointer; }
+  table.out tbody tr:hover { background: var(--sunk); }
+  .pill { font-size: 12.5px; font-weight: 650; padding: 2px 8px; border-radius: 999px; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); } .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .dl { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-weight: 600; }
+
+  /* how it works */
+  .diagram { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 14px; }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .diagram .tall { display: none; max-width: 380px; margin: 0 auto; }
+  .d-box { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
+  .d-box.claude { fill: var(--accent-soft); stroke: var(--accent); }
+  .d-box.ok { fill: var(--ok-soft); stroke: var(--ok); } .d-box.warn { fill: var(--warn-soft); stroke: var(--warn); }
+  .d-t { fill: var(--ink); font: 650 15px "Archivo Variable", system-ui, sans-serif; }
+  .d-s { fill: var(--muted); font: 400 12.5px "Archivo Variable", system-ui, sans-serif; }
+  .d-g { fill: var(--muted); font: 650 13px "Archivo Variable", system-ui, sans-serif; }
+  .d-line { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+  .d-brace { stroke: var(--muted); stroke-width: 1.2; fill: none; }
+  .d-arrow { fill: var(--muted); }
+  .d-bg { fill: var(--surface); }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .split > div { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; min-width: 0; }
+  .split > div.claude { border-left: 4px solid var(--accent); }
+  .split > div.code { border-left: 4px solid var(--ink); }
+  .split h3 { margin: 0 0 8px; font-size: 17px; }
+  .split ul { margin: 0; padding-left: 18px; font-size: 15px; }
+  .split li + li { margin-top: 5px; }
+  .guard { margin: 14px 0 0; font-size: 15px; max-width: 80ch; }
+
+  /* production */
+  .prod-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; margin: 0; padding: 0; list-style: none; }
+  .prod-list li { padding: 14px 0; border-top: 1px solid var(--rule); min-width: 0; }
+  .prod-list b { display: block; font-weight: 680; margin-bottom: 2px; }
+  .prod-list span { color: var(--muted); font-size: 15px; }
+  .honest { margin-top: 18px; font-size: 15px; color: var(--muted); max-width: 80ch; }
+
+  /* call to action, rollout, labels */
+  .cta { margin: 22px 0 0; max-width: 74ch; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    border-left: 5px solid var(--accent); border-radius: 8px; padding: 16px 20px; }
+  .cta p { margin: 0; font-size: 17.5px; line-height: 1.5; font-weight: 560; }
+  .plan-h { font-size: 18px; margin: 30px 0 8px; }
+  .plan { list-style: none; margin: 0; padding: 0; max-width: 74ch; }
+  .plan li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-top: 1px solid var(--rule); }
+  .plan b { font-weight: 680; }
+  .nw { white-space: nowrap; }
+  .inferred { grid-column: 1 / -1; justify-self: start; font-size: 12.5px; font-weight: 600; color: var(--accent);
+    border: 1px dashed var(--accent); border-radius: 4px; padding: 1px 7px; margin: 3px 0 2px; }
+  .ticket .why.soft { color: var(--muted); }
+
+  footer { padding-block: 48px 56px; color: var(--muted); font-size: 13.5px; }
+  footer p { margin: 4px 0; max-width: 90ch; }
+
+  @media (max-width: 1020px) {
+    .rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .exc { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 860px) {
+    .viewer { grid-template-columns: minmax(0, 1fr); }
+    .pane.src { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .stick { position: static; }
+    pre.doc, .sheet { max-height: 380px; }
+    .split, .prod-list { grid-template-columns: 1fr; }
+    .diagram .wide { display: none; } .diagram .tall { display: block; }
+  }
+  @media (max-width: 560px) {
+    .rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .ticket { min-height: 138px; padding: 11px 11px; }
+    .t-perf { margin-left: -11px; margin-right: -11px; }
+    .pane { padding: 14px 14px 18px; }
+    .fact { padding: 8px 10px; }
+    .line { grid-template-columns: minmax(0, 1fr); }
+    .line .money { text-align: left; white-space: normal; }
+    .banner nav a, .banner nav button { padding: 4px 8px; }
+    header.hero { padding-top: 30px; }
+    .lead { font-size: 16.5px; }
+    .status-row .total { font-size: 19px; }
+    table.out th, table.out td { padding: 8px 7px; }
+    table.out th:nth-child(1), table.out td:nth-child(1), table.out th:nth-child(4), table.out td:nth-child(4),
+    table.out th:nth-child(6), table.out td:nth-child(6), table.out th:nth-child(8), table.out td:nth-child(8) { display: none; }
+    table.out td:nth-child(3), table.out td:nth-child(5) { white-space: normal; }
+    .plan li { grid-template-columns: 84px minmax(0, 1fr); }
+    .cta p { font-size: 16.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="wrap">
+    <p>Demo built for your job post with synthetic data, and processed by Claude for real.</p>
+    <nav aria-label="Downloads">
+      <a href="orders.xlsx" download>orders.xlsx</a>
+      <a href="inputs/PO_LGH-20931.pdf" target="_blank" rel="noopener">Sample PO (PDF)</a>
+      <a href="sample_inputs.zip" download>All 10 inputs (.zip)</a>
+      <button type="button" id="theme" aria-label="Switch colour theme">Dark mode</button>
+    </nav>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <p class="kicker">Working demo: Claude order intake for a wholesale distributor</p>
+  <h1 id="headline">Orders in, decisions out</h1>
+  <p class="lead">Claude reads each file. Plain code then applies each account's rules and prices from your own spreadsheets. The AI never sets a price or approves an order.</p>
+  <ol class="rail" id="rail" aria-label="The incoming orders"></ol>
+  <p class="proof" id="proof"></p>
+  <aside class="cta"><p>Send me 10–20 of your real orders (redact anything sensitive). Within 2 days I'll run them through this and send back this same page built on your data — including what it got wrong.</p></aside>
+</header>
+
+<main>
+  <section class="wrap" id="viewer-section" aria-labelledby="viewer-h">
+    <h2 id="viewer-h">What arrived, and what the system made of it</h2>
+    <p class="sub">The file as it arrived, then the order after Claude and the rules. Pick a ticket above to see any of the ten. The catalog is food service only as an example: your catalog and account rules swap in.</p>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="viewer" id="viewer" aria-live="polite"></div>
+  </section>
+
+  <section class="wrap" aria-labelledby="exc-h">
+    <h2 id="exc-h">Held for a person</h2>
+    <p class="sub">Nothing uncertain goes through silently: anything inferred is labelled, and when a rule fails or a match isn't certain, the order waits for a person.</p>
+    <div class="exc" id="exceptions"></div>
+  </section>
+
+  <section class="wrap" aria-labelledby="out-h">
+    <h2 id="out-h">The spreadsheet your team gets</h2>
+    <p class="sub">One row per order, ready to import into your ERP or accounting system. The file also has an Order lines tab, showing how each line was matched, and an Exceptions tab.</p>
+    <div class="tablewrap"><table class="out" id="out"></table></div>
+    <a class="dl" href="orders.xlsx" download>Download orders.xlsx</a>
+  </section>
+
+  <section class="wrap" aria-labelledby="prod-h">
+    <h2 id="prod-h">What production looks like</h2>
+    <p class="sub">The demo is the core loop. Around it, a real deployment needs:</p>
+    <ul class="prod-list">
+      <li><b>Inbox and Drive watcher</b><span>A shared order inbox (Gmail or Outlook) and a Drive folder are watched. Attachments are split out, and each order is processed within a minute of arriving.</span></li>
+      <li><b>Review screen</b><span>The side-by-side view above becomes the reviewer's tool: correct a line, approve, or reply to the customer. Each correction is saved for that account, so it's automatic next time.</span></li>
+      <li><b>Your spreadsheets, merged</b><span>I combine your customer and product sheets into one account table and flag duplicates and conflicts for you to settle. Your team keeps editing it as a spreadsheet, so rules change without a developer.</span></li>
+      <li><b>Accuracy check before go-live</b><span>A few hundred of your real past orders with known correct answers. Every field's accuracy is measured before anything auto-approves, and again after every prompt change.</span></li>
+      <li><b>Documentation and handover</b><span>A one-page reviewer guide, a how-to for adding an account or rule, a recorded walkthrough, and code docs.</span></li>
+      <li><b>Audit log</b><span>Every order keeps the original file, Claude's raw output, each rule result, and who approved it and when.</span></li>
+      <li><b>Running cost</b><span>The fixed part of each request (instructions, catalog) is cached, and backlogs go through the Batch API at half the per-token price. Cost per order gets measured on your orders, not estimated here.</span></li>
+    </ul>
+    <h3 class="plan-h">Rollout</h3>
+    <ol class="plan">
+      <li><b>Weeks 1–2</b><span>Your spreadsheets merged, 200 past orders measured.</span></li>
+      <li><b>Weeks 3–6</b><span>Order inbox live, everything held for review.</span></li>
+      <li><b>Then</b><span>Auto-approve account by account once accuracy clears an agreed bar.</span></li>
+    </ol>
+    <p class="honest">Scanned or handwritten PDFs would add an OCR or vision step; these test PDFs have a text layer.</p>
+  </section>
+
+  <section class="wrap" aria-labelledby="how-h">
+    <h2 id="how-h">How it works</h2>
+    <p class="sub">Claude reads the documents. Plain code, working from your own account and product spreadsheets, makes every decision.</p>
+    <div class="diagram">
+      <svg class="wide" viewBox="0 0 1100 236" role="img" aria-labelledby="dg-t">
+        <title id="dg-t">Inputs, then Claude extraction with a strict schema, then account and product matching, then rules and pricing, then auto-approve or review queue, then spreadsheet or ERP</title>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker></defs>
+        <path class="d-brace" d="M184 40 v-10 h152 v10"/>
+        <text class="d-g" x="260" y="20" text-anchor="middle">Claude reads</text>
+        <path class="d-brace" d="M364 40 v-10 h516 v10"/>
+        <text class="d-g" x="622" y="20" text-anchor="middle">Code decides, from your spreadsheets</text>
+        <rect class="d-box" x="4" y="56" width="152" height="118" rx="8"/>
+        <text class="d-t" x="80" y="92" text-anchor="middle">Incoming orders</text>
+        <text class="d-s" x="80" y="116" text-anchor="middle">email, PDF, Excel,</text>
+        <text class="d-s" x="80" y="134" text-anchor="middle">CSV, chat</text>
+        <rect class="d-box claude" x="184" y="56" width="152" height="118" rx="8"/>
+        <text class="d-t" x="260" y="92" text-anchor="middle">Extraction</text>
+        <text class="d-s" x="260" y="116" text-anchor="middle">strict JSON schema:</text>
+        <text class="d-s" x="260" y="134" text-anchor="middle">customer, PO, date,</text>
+        <text class="d-s" x="260" y="152" text-anchor="middle">lines as written</text>
+        <rect class="d-box" x="364" y="56" width="152" height="118" rx="8"/>
+        <text class="d-t" x="440" y="92" text-anchor="middle">Matching</text>
+        <text class="d-s" x="440" y="116" text-anchor="middle">120 accounts: name,</text>
+        <text class="d-s" x="440" y="134" text-anchor="middle">alias, email, spelling;</text>
+        <text class="d-s" x="440" y="152" text-anchor="middle">SKUs must exist</text>
+        <rect class="d-box" x="544" y="56" width="152" height="118" rx="8"/>
+        <text class="d-t" x="620" y="92" text-anchor="middle">Rules and pricing</text>
+        <text class="d-s" x="620" y="116" text-anchor="middle">tier prices, PO rules,</text>
+        <text class="d-s" x="620" y="134" text-anchor="middle">minimums, units,</text>
+        <text class="d-s" x="620" y="152" text-anchor="middle">route days</text>
+        <rect class="d-box ok" x="724" y="56" width="156" height="52" rx="8"/>
+        <text class="d-t" x="802" y="87" text-anchor="middle">Approved</text>
+        <rect class="d-box warn" x="724" y="122" width="156" height="52" rx="8"/>
+        <text class="d-t" x="802" y="146" text-anchor="middle">Review queue</text>
+        <text class="d-s" x="802" y="164" text-anchor="middle">with reasons</text>
+        <rect class="d-box" x="938" y="56" width="152" height="118" rx="8"/>
+        <text class="d-t" x="1014" y="92" text-anchor="middle">Spreadsheet</text>
+        <text class="d-t" x="1014" y="112" text-anchor="middle">or ERP</text>
+        <text class="d-s" x="1014" y="136" text-anchor="middle">orders, lines,</text>
+        <text class="d-s" x="1014" y="154" text-anchor="middle">exceptions</text>
+        <path class="d-line" d="M156 115 H180" marker-end="url(#ah)"/>
+        <path class="d-line" d="M336 115 H360" marker-end="url(#ah)"/>
+        <path class="d-line" d="M516 115 H540" marker-end="url(#ah)"/>
+        <path class="d-line" d="M696 115 H708 V82 H720" marker-end="url(#ah)"/>
+        <path class="d-line" d="M708 115 V148 H720" marker-end="url(#ah)"/>
+        <path class="d-line" d="M880 82 H904 V115 H934" marker-end="url(#ah)"/>
+        <path class="d-line" d="M880 148 H904 V115"/>
+        <text class="d-s" x="802" y="206" text-anchor="middle">a person fixes it once;</text>
+        <text class="d-s" x="802" y="224" text-anchor="middle">and the fix is remembered</text>
+        <path class="d-line" d="M802 174 V190" stroke-dasharray="3 3"/>
+      </svg>
+      <svg class="tall" viewBox="0 0 360 700" role="img" aria-labelledby="dg-t2">
+        <title id="dg-t2">The same flow, top to bottom</title>
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="d-arrow"/></marker></defs>
+        <rect class="d-box" x="30" y="4" width="300" height="72" rx="8"/>
+        <text class="d-t" x="180" y="34" text-anchor="middle">Incoming orders</text>
+        <text class="d-s" x="180" y="56" text-anchor="middle">email, PDF, Excel, CSV, chat</text>
+        <rect class="d-box claude" x="30" y="108" width="300" height="84" rx="8"/>
+        <text class="d-t" x="180" y="136" text-anchor="middle">Claude extraction</text>
+        <text class="d-s" x="180" y="158" text-anchor="middle">strict JSON schema: customer, PO,</text>
+        <text class="d-s" x="180" y="176" text-anchor="middle">date and lines, as written</text>
+        <rect class="d-box" x="30" y="236" width="300" height="84" rx="8"/>
+        <text class="d-t" x="180" y="264" text-anchor="middle">Account and product matching</text>
+        <text class="d-s" x="180" y="286" text-anchor="middle">name, alias, email domain, spelling;</text>
+        <text class="d-s" x="180" y="304" text-anchor="middle">every SKU must exist in the catalog</text>
+        <rect class="d-box" x="30" y="352" width="300" height="84" rx="8"/>
+        <text class="d-t" x="180" y="380" text-anchor="middle">Rules and pricing</text>
+        <text class="d-s" x="180" y="402" text-anchor="middle">tier prices, PO rules, minimums,</text>
+        <text class="d-s" x="180" y="420" text-anchor="middle">unit conversion, route days</text>
+        <rect class="d-box ok" x="30" y="468" width="142" height="62" rx="8"/>
+        <text class="d-t" x="101" y="504" text-anchor="middle">Approved</text>
+        <rect class="d-box warn" x="188" y="468" width="142" height="62" rx="8"/>
+        <text class="d-t" x="259" y="496" text-anchor="middle">Review queue</text>
+        <text class="d-s" x="259" y="516" text-anchor="middle">with reasons</text>
+        <rect class="d-box" x="30" y="572" width="300" height="72" rx="8"/>
+        <text class="d-t" x="180" y="602" text-anchor="middle">Spreadsheet or ERP</text>
+        <text class="d-s" x="180" y="624" text-anchor="middle">orders, lines, exceptions</text>
+        <path class="d-line" d="M180 76 V104" marker-end="url(#ah2)"/>
+        <path class="d-line" d="M180 192 V232" marker-end="url(#ah2)"/>
+        <rect class="d-bg" x="118" y="83" width="124" height="18"/>
+        <text class="d-g" x="180" y="96" text-anchor="middle">Claude reads</text>
+        <rect class="d-bg" x="52" y="203" width="256" height="18"/>
+        <text class="d-g" x="180" y="216" text-anchor="middle">Code decides, from your spreadsheets</text>
+        <path class="d-line" d="M180 320 V348" marker-end="url(#ah2)"/>
+        <path class="d-line" d="M180 436 V450 H101 V464" marker-end="url(#ah2)"/>
+        <path class="d-line" d="M180 450 H259 V464" marker-end="url(#ah2)"/>
+        <path class="d-line" d="M101 530 V551 H180 V568" marker-end="url(#ah2)"/>
+        <path class="d-line" d="M259 530 V551 H180"/>
+        <text class="d-s" x="180" y="676" text-anchor="middle">Review fixes are remembered, so they don't repeat.</text>
+      </svg>
+    </div>
+    <div class="split">
+      <div class="claude">
+        <h3>What Claude does</h3>
+        <ul>
+          <li>Reads any format: typo-filled emails, forwarded threads, PDF purchase orders, odd spreadsheet exports, chat logs.</li>
+          <li>Copies the customer, PO number, date and each line exactly as written, into fixed fields rather than free text.</li>
+          <li>Follows the conversation: "actually make it 4", "same as last time but double the flour", quoted old orders to ignore.</li>
+          <li>Suggests catalog SKUs for each line, and lists every option when the wording is ambiguous.</li>
+        </ul>
+      </div>
+      <div class="code">
+        <h3>What code does</h3>
+        <ul>
+          <li>Finds the account: exact name, then known alias, then the sender's email domain (from the real email header, not from the text), then close spelling.</li>
+          <li>Checks every SKU exists and converts units with real pack sizes (12 tins = 2 cases; 72 lb = 2 cases).</li>
+          <li>Prices from the account's tier. Applies its rules: PO required, minimum order, approval limits, route days, pallet and driver notes.</li>
+          <li>Approves the order, or holds it with a reason. The same input always gives the same decision.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="guard">If Claude suggests a SKU that isn't in the catalog, code drops it. If a PO has prices printed on it, code checks them against your price list and never copies them. The model can't make up a product, a price or an approval.</p>
+  </section>
+
+  <section class="wrap" aria-label="Next step">
+    <aside class="cta"><p>Send me 10–20 of your real orders (redact anything sensitive). Within 2 days I'll run them through this and send back this same page built on your data — including what it got wrong.</p></aside>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p id="foot-run"></p>
+  <p>All data is synthetic: 120 fictional accounts, a 45-SKU catalog, an order history and 10 orders written for this demo. Domains use the reserved .example ending. No real customers or companies.</p>
+</footer>
+
+<script id="order-data" type="application/json">{"as_of": "2026-09-25T10:00", "generated_at": "2026-09-25T17:14:39", "model": "Claude Sonnet via the claude CLI", "timing": {"read_s": 0.08, "claude_s": 63.6, "rules_ms": 29, "total_s": 64.1}, "counts": {"orders": 10, "formats": ["CSV", "Chat", "Email", "Excel", "PDF"], "lines": 56, "approved": 6, "review": 4, "accounts": 120, "skus": 45, "value_approved": 6225.71}, "eval": {"orders_correct": 10, "orders": 10, "lines_correct": 56, "lines": 56, "flags_correct": 10, "detail": [{"file": "email_2026-09-24_1652.eml", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "4/4"}, {"file": "email_2026-09-24_1805.eml", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "6/6"}, {"file": "email_2026-09-25_0541.eml", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "6/6"}, {"file": "reorder_2026-09-25.csv", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "3/3"}, {"file": "BV_PO_export_55821.xlsx", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "8/8"}, {"file": "chat_export_2026-09-25.txt", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "4/4"}, {"file": "email_2026-09-25_0814.eml", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "4/4"}, {"file": "email_2026-09-25_0902.eml", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "3/3"}, {"file": "PO_LGH-20931.pdf", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "10/10"}, {"file": "RR-2209_order.pdf", "ok": true, "checks": {"account": true, "po": true, "date": true, "lines": true, "status": true, "reasons": true}, "lines": "8/8"}]}, "orders": [{"file": "email_2026-09-24_1652.eml", "format": "Email", "received": "2026-09-24T16:52", "received_source": "email header", "customer": {"as_written": "Harbor St Bistro", "sender_email": "marco@harborstreetbistro.example", "account_id": "ACC-014", "method": "known alias + sender's email domain", "confidence": 0.99, "best_guess": null, "domain_account": "ACC-014"}, "po_number": "4471", "lines": [{"as_written": "the big olive oil", "qty_written": "2 cs", "item_code": "", "price_on_document": null, "claude_candidates": ["OLV-EV-3L", "OLV-EV-5L", "OLV-PO-5L"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "OLV-EV-5L", "method": "this account's confirmed phrase 'big olive oil' (confirmed in review 2026-08-12)", "confidence": 0.99, "candidates": [], "rejected_skus": [], "n": 1, "product": "Extra virgin olive oil 5 L jug", "sell_unit": "case", "pack": "3 x 5 L", "candidate_names": {}, "unit_price": 125.4, "line_total": 250.8}, {"as_written": "00 flour", "qty_written": "3 bags", "item_code": "", "price_on_document": null, "claude_candidates": ["FLR-00-25"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "FLR-00-25", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 2, "product": "Tipo 00 pizza flour 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 28.31, "line_total": 84.93}, {"as_written": "crushed toms", "qty_written": "12 tins", "item_code": "", "price_on_document": null, "claude_candidates": ["TOM-CR-10"], "inferred": false, "qty": 2, "unit_note": "Claude kept 12 tins as written; code converted it to 2 cases of 6 cans", "source": "document", "sku": "TOM-CR-10", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 3, "product": "Crushed tomatoes #10 can", "sell_unit": "case", "pack": "6 x #10 can", "candidate_names": {}, "unit_price": 30.78, "line_total": 61.56}, {"as_written": "parm", "qty_written": "1 case", "item_code": "", "price_on_document": null, "claude_candidates": ["CHS-PRM-2"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "CHS-PRM-2", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 4, "product": "Parmigiano Reggiano 24-month wedges", "sell_unit": "case", "pack": "2 x 2.5 kg", "candidate_names": {}, "unit_price": 91.2, "line_total": 91.2}], "requested_as_written": "thursday", "delivery_instructions": "Thursday delivery if possible; kitchen is slammed on Tuesday.", "notes_for_reviewer": ["'The big olive oil' is ambiguous (type and size not stated).", "Crushed tomatoes ordered as 12 tins; catalog sells by case of 6 x #10 cans, unit left as written.", "Parm requested 'if you have it'."], "unmatched_adjustments": [], "subtotal": 488.49, "requested_date": "2026-10-01", "delivery_date": "2026-10-01", "delivery_note": "", "reasons": [], "checks": [{"ok": true, "text": "Customer matched to ACC-014 Harbor Street Bistro (matched by: known alias + sender's email domain)"}, {"ok": true, "text": "4 of 4 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "text": "PO number 4471 present (this account requires one)"}, {"ok": true, "text": "Priced from the Preferred price list, never from the document"}, {"ok": true, "text": "$488.49 meets the $250.00 account minimum"}, {"ok": true, "text": "Delivery Thu 1 Oct is on this account's route (Tue, Thu)"}], "notes": [], "status": "AUTO-APPROVED", "account": {"id": "ACC-014", "name": "Harbor Street Bistro", "tier": "Preferred", "delivery_days": "Tue, Thu", "min_order": 250.0, "payment_terms": "Net 30", "rules": ["Requires PO number"], "po_required": true, "aliases": "Harbor St Bistro; Harbour Street Bistro; HSB"}, "extraction": {"file": "email_2026-09-24_1652.eml", "customer_as_written": "Harbor St Bistro", "contact_name": "Marco", "sender_email": "marco@harborstreetbistro.example", "po_number": "4471", "requested_date_as_written": "thursday", "requested_date": "2026-10-01", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "the big olive oil", "quantity": 2, "unit_as_written": "cs", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["OLV-EV-3L", "OLV-EV-5L", "OLV-PO-5L"], "quantity_inferred": false}, {"text_as_written": "00 flour", "quantity": 3, "unit_as_written": "bags", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["FLR-00-25"], "quantity_inferred": false}, {"text_as_written": "crushed toms", "quantity": 12, "unit_as_written": "tins", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["TOM-CR-10"], "quantity_inferred": false}, {"text_as_written": "parm", "quantity": 1, "unit_as_written": "case", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["CHS-PRM-2"], "quantity_inferred": false}], "delivery_instructions": "Thursday delivery if possible; kitchen is slammed on Tuesday.", "notes_for_reviewer": ["'The big olive oil' is ambiguous (type and size not stated).", "Crushed tomatoes ordered as 12 tins; catalog sells by case of 6 x #10 cans, unit left as written.", "Parm requested 'if you have it'."]}, "id": "ORD-0001", "source": {"raw": "From: Marco <marco@harborstreetbistro.example>\nTo: orders@bayline.example\nDate: Thu, 24 Sep 2026 16:52:10 -0400\nSubject: order for next wk\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nhey guys\n\ncan u send over 2 cs of the big olive oil, 3 bags of 00 flour and 12 tins of crushed toms. also a case of parm if you have it\n\nPO is 4471\nthursday delivery if poss, we're slammed tues\n\nthx\nMarco\nHarbor St Bistro\n"}}, {"file": "email_2026-09-24_1805.eml", "format": "Email", "received": "2026-09-24T18:05", "received_source": "email header", "customer": {"as_written": "Old Mill Deli & Grocer", "sender_email": "office@oldmilldeli.example", "account_id": "ACC-022", "method": "exact name + sender's email domain", "confidence": 1.0, "best_guess": null, "domain_account": "ACC-022"}, "po_number": "OM-2291", "lines": [{"as_written": "evoo 1l", "qty_written": "4 cs", "item_code": "", "price_on_document": null, "claude_candidates": ["OLV-EV-1L"], "inferred": false, "qty": 4, "unit_note": "", "source": "document", "sku": "OLV-EV-1L", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 1, "product": "Extra virgin olive oil 1 L", "sell_unit": "case", "pack": "12 x 1 L", "candidate_names": {}, "unit_price": 118.0, "line_total": 472.0}, {"as_written": "spagetti (the 5kg ones)", "qty_written": "10", "item_code": "", "price_on_document": null, "claude_candidates": ["PST-SPG-5"], "inferred": false, "qty": 10, "unit_note": "", "source": "document", "sku": "PST-SPG-5", "method": "Claude's reading, confirmed by spelling match", "confidence": 0.93, "candidates": [], "rejected_skus": [], "n": 2, "product": "Spaghetti 5 kg", "sell_unit": "case", "pack": "5 kg case", "candidate_names": {}, "unit_price": 12.6, "line_total": 126.0}, {"as_written": "whole peeld tomatos", "qty_written": "5 cs", "item_code": "", "price_on_document": null, "claude_candidates": ["TOM-WH-10"], "inferred": false, "qty": 5, "unit_note": "", "source": "document", "sku": "TOM-WH-10", "method": "Claude's reading, confirmed by spelling match", "confidence": 0.93, "candidates": [], "rejected_skus": [], "n": 3, "product": "Whole peeled tomatoes #10 can", "sell_unit": "case", "pack": "6 x #10 can", "candidate_names": {}, "unit_price": 34.2, "line_total": 171.0}, {"as_written": "balsmic", "qty_written": "2", "item_code": "", "price_on_document": null, "claude_candidates": ["VIN-BAL-5L"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "VIN-BAL-5L", "method": "Claude's reading, confirmed by spelling match", "confidence": 0.93, "candidates": [], "rejected_skus": [], "n": 4, "product": "Balsamic vinegar of Modena 5 L", "sell_unit": "jug", "pack": "5 L jug", "candidate_names": {}, "unit_price": 38.0, "line_total": 76.0}, {"as_written": "kosher salt", "qty_written": "3", "item_code": "", "price_on_document": null, "claude_candidates": ["SLT-KOS-12"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "SLT-KOS-12", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 5, "product": "Kosher salt 12 x 1.36 kg", "sell_unit": "case", "pack": "12 x 1.36 kg", "candidate_names": {}, "unit_price": 39.0, "line_total": 117.0}, {"as_written": "bread flour", "qty_written": "50 kg", "item_code": "", "price_on_document": null, "claude_candidates": ["FLR-BR-25"], "inferred": false, "qty": 2, "unit_note": "Claude kept 50 kg as written; code converted it to 2 × 25 kg bags", "source": "document", "sku": "FLR-BR-25", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 6, "product": "Bread flour 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 23.9, "line_total": 47.8}], "requested_as_written": "Monday", "delivery_instructions": "Monday delivery before noon if possible.", "notes_for_reviewer": ["Forwarded chef's list (Luis); sent by office (Dana). Quoted earlier order from 14 Sep ignored.", "Bread flour ordered as 50 kg; catalog sells 25 kg bags, unit left as written.", "Several lines have no unit written."], "unmatched_adjustments": [], "subtotal": 1009.8, "requested_date": "2026-09-28", "delivery_date": "2026-09-29", "delivery_note": "Requested Mon 28 Sep; this account's route runs Tue, Fri → confirm Tue 29 Sep delivery with the customer.", "reasons": [{"code": "DATE_CHANGED", "label": "date not on route", "text": "Requested Mon 28 Sep; this account's route runs Tue, Fri → confirm Tue 29 Sep delivery with the customer.", "action": "Call or email the customer to confirm the new date; release once they agree."}], "checks": [{"ok": true, "text": "Customer matched to ACC-022 Old Mill Deli & Grocer (matched by: exact name + sender's email domain)"}, {"ok": true, "text": "6 of 6 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "text": "PO number OM-2291 present (this account requires one)"}, {"ok": true, "text": "Priced from the Standard price list, never from the document"}, {"ok": true, "text": "$1,009.80 meets the $200.00 account minimum"}, {"ok": false, "text": "Requested date isn't on this account's route (Tue, Fri); proposed Tue 29 Sep"}], "notes": ["No substitutions: pick exactly as ordered; call the customer if anything is short"], "status": "NEEDS REVIEW", "account": {"id": "ACC-022", "name": "Old Mill Deli & Grocer", "tier": "Standard", "delivery_days": "Tue, Fri", "min_order": 200.0, "payment_terms": "Net 14", "rules": ["Requires PO number", "No substitutions"], "po_required": true, "aliases": "Old Mill Deli; Old Mill"}, "extraction": {"file": "email_2026-09-24_1805.eml", "customer_as_written": "Old Mill Deli & Grocer", "contact_name": "Dana", "sender_email": "office@oldmilldeli.example", "po_number": "OM-2291", "requested_date_as_written": "Monday", "requested_date": "2026-09-28", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "evoo 1l", "quantity": 4, "unit_as_written": "cs", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["OLV-EV-1L"], "quantity_inferred": false}, {"text_as_written": "spagetti (the 5kg ones)", "quantity": 10, "unit_as_written": "", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["PST-SPG-5"], "quantity_inferred": false}, {"text_as_written": "whole peeld tomatos", "quantity": 5, "unit_as_written": "cs", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["TOM-WH-10"], "quantity_inferred": false}, {"text_as_written": "balsmic", "quantity": 2, "unit_as_written": "", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["VIN-BAL-5L"], "quantity_inferred": false}, {"text_as_written": "kosher salt", "quantity": 3, "unit_as_written": "", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["SLT-KOS-12"], "quantity_inferred": false}, {"text_as_written": "bread flour", "quantity": 50, "unit_as_written": "kg", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["FLR-BR-25"], "quantity_inferred": false}], "delivery_instructions": "Monday delivery before noon if possible.", "notes_for_reviewer": ["Forwarded chef's list (Luis); sent by office (Dana). Quoted earlier order from 14 Sep ignored.", "Bread flour ordered as 50 kg; catalog sells 25 kg bags, unit left as written.", "Several lines have no unit written."]}, "id": "ORD-0002", "source": {"raw": "From: Old Mill Deli Office <office@oldmilldeli.example>\nTo: orders@bayline.example\nDate: Thu, 24 Sep 2026 18:05:44 -0400\nSubject: Fwd: order\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nHi, pls see chef's list below. PO# OM-2291.\nMonday delivery please, before noon if you can.\n\nDana\nOffice, Old Mill Deli & Grocer\n\n---------- Forwarded message ---------\nFrom: Luis <kitchen@oldmilldeli.example>\nDate: Thu, 24 Sep 2026 at 15:31\nSubject: order\n\nneed for next wk:\n- 4 cs evoo 1l\n- 10 spagetti (the 5kg ones)\n- 5 cs whole peeld tomatos\n- 2 balsmic\n- kosher salt x3\n- 50kg bread flour\n\n> On Mon, 14 Sep 2026 at 09:12, Luis <kitchen@oldmilldeli.example> wrote:\n> - 2 cs evoo 1l\n> - 6 spagetti\n> - 3 cs whole tomatos\n> - 1 balsmic\n"}}, {"file": "email_2026-09-25_0541.eml", "format": "Email", "received": "2026-09-25T05:41", "received_source": "email header", "customer": {"as_written": "Golden Crumb", "sender_email": "orders@goldencrumb.example", "account_id": "ACC-037", "method": "known alias + sender's email domain", "confidence": 0.99, "best_guess": null, "domain_account": "ACC-037"}, "po_number": "", "lines": [{"as_written": "same as last time (flour ×2)", "qty_written": "4 on SO-10281", "sku": "FLR-BR-25", "candidates": [], "rejected_skus": [], "method": "account order history (SO-10281, ×2 for 'flour')", "confidence": 1.0, "qty": 8, "unit_note": "", "source": "history", "n": 1, "product": "Bread flour 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 21.51, "line_total": 172.08}, {"as_written": "same as last time", "qty_written": "2 on SO-10281", "sku": "BTR-UNS-36", "candidates": [], "rejected_skus": [], "method": "account order history (SO-10281)", "confidence": 1.0, "qty": 2, "unit_note": "", "source": "history", "n": 2, "product": "Unsalted butter 1 lb", "sell_unit": "case", "pack": "36 x 1 lb", "candidate_names": {}, "unit_price": 127.8, "line_total": 255.6}, {"as_written": "same as last time", "qty_written": "2 on SO-10281", "sku": "SUG-GR-25", "candidates": [], "rejected_skus": [], "method": "account order history (SO-10281)", "confidence": 1.0, "qty": 2, "unit_note": "", "source": "history", "n": 3, "product": "Granulated sugar 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 28.08, "line_total": 56.16}, {"as_written": "same as last time", "qty_written": "1 on SO-10281", "sku": "YST-INS-20", "candidates": [], "rejected_skus": [], "method": "account order history (SO-10281)", "confidence": 1.0, "qty": 1, "unit_note": "", "source": "history", "n": 4, "product": "Instant dry yeast 20 x 500 g", "sell_unit": "case", "pack": "20 x 500 g", "candidate_names": {}, "unit_price": 79.2, "line_total": 79.2}, {"as_written": "same as last time", "qty_written": "2 on SO-10281", "sku": "EGG-LG-15", "candidates": [], "rejected_skus": [], "method": "account order history (SO-10281)", "confidence": 1.0, "qty": 2, "unit_note": "", "source": "history", "n": 5, "product": "Large eggs, 15 dozen", "sell_unit": "case", "pack": "15 dozen", "candidate_names": {}, "unit_price": 47.25, "line_total": 94.5}, {"as_written": "dark choc callets", "qty_written": "1 bag", "item_code": "", "price_on_document": null, "claude_candidates": ["CHC-DK-5"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "CHC-DK-5", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 6, "product": "Dark chocolate callets 54% 5 kg", "sell_unit": "bag", "pack": "5 kg bag", "candidate_names": {}, "unit_price": 66.6, "line_total": 66.6}], "requested_as_written": "Monday", "delivery_instructions": "", "notes_for_reviewer": ["Previous order contents not given; 'the flour' may cover more than one flour type in the last order."], "unmatched_adjustments": [], "repeat_of": {"order_id": "SO-10281", "date": "2026-09-18"}, "subtotal": 724.14, "requested_date": "2026-09-28", "delivery_date": "2026-09-28", "delivery_note": "", "reasons": [], "checks": [{"ok": true, "text": "Customer matched to ACC-037 Golden Crumb Bakery (matched by: known alias + sender's email domain)"}, {"ok": true, "text": "6 of 6 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "text": "Priced from the Key account price list, never from the document"}, {"ok": true, "text": "$724.14 meets the $300.00 account minimum"}, {"ok": true, "text": "Delivery Mon 28 Sep is on this account's route (Mon, Wed, Fri)"}], "notes": ["Driver: Deliver before 6am", "Driver: Rear entrance delivery"], "status": "AUTO-APPROVED", "account": {"id": "ACC-037", "name": "Golden Crumb Bakery", "tier": "Key account", "delivery_days": "Mon, Wed, Fri", "min_order": 300.0, "payment_terms": "Net 14", "rules": ["Deliver before 6am", "Rear entrance delivery"], "po_required": false, "aliases": "Golden Crumb"}, "extraction": {"file": "email_2026-09-25_0541.eml", "customer_as_written": "Golden Crumb", "contact_name": "Priya", "sender_email": "orders@goldencrumb.example", "po_number": "", "requested_date_as_written": "Monday", "requested_date": "2026-09-28", "repeat_previous_order": true, "repeat_adjustments": [{"item_as_written": "flour", "multiplier": 2}], "line_items": [{"text_as_written": "dark choc callets", "quantity": 1, "unit_as_written": "bag", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["CHC-DK-5"], "quantity_inferred": false}], "delivery_instructions": "", "notes_for_reviewer": ["Previous order contents not given; 'the flour' may cover more than one flour type in the last order."]}, "id": "ORD-0003", "source": {"raw": "From: Golden Crumb Orders <orders@goldencrumb.example>\nTo: orders@bayline.example\nDate: Fri, 25 Sep 2026 05:41:03 -0400\nSubject: Re: weekly order\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nMorning!\nSame as last time but double the flour pls. And add a bag of the dark choc callets.\nMonday is fine.\nPriya\n"}}, {"file": "reorder_2026-09-25.csv", "format": "CSV", "received": "2026-09-25T06:00", "received_source": "export timestamp", "customer": {"as_written": "Little Fern Coffee", "sender_email": "", "account_id": "ACC-102", "method": "exact name", "confidence": 1.0, "best_guess": null, "domain_account": null}, "po_number": "", "lines": [{"as_written": "Vanilla extract 1L", "qty_written": "2 EA", "item_code": "VAN-EXT-1L", "price_on_document": null, "claude_candidates": ["VAN-EXT-1L"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "VAN-EXT-1L", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 1, "product": "Pure vanilla extract 1 L", "sell_unit": "bottle", "pack": "1 L bottle", "candidate_names": {}, "unit_price": 58.0, "line_total": 116.0}, {"as_written": "Wildflower honey 3kg", "qty_written": "1 EA", "item_code": "HNY-WF-3", "price_on_document": null, "claude_candidates": ["HNY-WF-3"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "HNY-WF-3", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 2, "product": "Wildflower honey 3 kg tub", "sell_unit": "tub", "pack": "3 kg tub", "candidate_names": {}, "unit_price": 27.5, "line_total": 27.5}, {"as_written": "Sliced almonds", "qty_written": "1 BAG", "item_code": "NUT-ALM-SL", "price_on_document": null, "claude_candidates": ["NUT-ALM-SL"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "NUT-ALM-SL", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 3, "product": "Sliced almonds 2.27 kg", "sell_unit": "bag", "pack": "2.27 kg bag", "candidate_names": {}, "unit_price": 34.8, "line_total": 34.8}], "requested_as_written": "", "delivery_instructions": "", "notes_for_reviewer": ["Automated par reorder export; quantities taken from qty_to_order column.", "No delivery date requested."], "unmatched_adjustments": [], "subtotal": 178.3, "requested_date": "", "delivery_date": "2026-09-29", "delivery_note": "", "reasons": [{"code": "BELOW_MINIMUM", "label": "below minimum", "text": "Order total $178.30 is below Little Fern Coffee Co.'s $250.00 minimum ($71.70 short).", "action": "Hold and merge with their next order, or add the small-order fee and confirm with the customer."}], "checks": [{"ok": true, "text": "Customer matched to ACC-102 Little Fern Coffee Co. (matched by: exact name)"}, {"ok": true, "text": "3 of 3 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "text": "Priced from the Standard price list, never from the document"}, {"ok": false, "text": "$178.30 is under the $250.00 account minimum"}, {"ok": true, "text": "Delivery Tue 29 Sep is on this account's route (Tue, Fri)"}], "notes": [], "status": "NEEDS REVIEW", "account": {"id": "ACC-102", "name": "Little Fern Coffee Co.", "tier": "Standard", "delivery_days": "Tue, Fri", "min_order": 250.0, "payment_terms": "Net 14", "rules": [], "po_required": false, "aliases": "Little Fern Coffee; Little Fern"}, "extraction": {"file": "reorder_2026-09-25.csv", "customer_as_written": "Little Fern Coffee", "contact_name": "", "sender_email": "", "po_number": "", "requested_date_as_written": "", "requested_date": "", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "Vanilla extract 1L", "quantity": 2, "unit_as_written": "EA", "item_code_on_document": "VAN-EXT-1L", "unit_price_on_document": 0, "sku_candidates": ["VAN-EXT-1L"], "quantity_inferred": false}, {"text_as_written": "Wildflower honey 3kg", "quantity": 1, "unit_as_written": "EA", "item_code_on_document": "HNY-WF-3", "unit_price_on_document": 0, "sku_candidates": ["HNY-WF-3"], "quantity_inferred": false}, {"text_as_written": "Sliced almonds", "quantity": 1, "unit_as_written": "BAG", "item_code_on_document": "NUT-ALM-SL", "unit_price_on_document": 0, "sku_candidates": ["NUT-ALM-SL"], "quantity_inferred": false}], "delivery_instructions": "", "notes_for_reviewer": ["Automated par reorder export; quantities taken from qty_to_order column.", "No delivery date requested."]}, "id": "ORD-0004", "source": {"raw": "export_type,par_reorder,,,,\ngenerated_at,2026-09-25 06:00,,,,\nlocation,Little Fern Coffee - Main St,,,,\n,,,,,\nitem_name,supplier_sku,on_hand,par,qty_to_order,uom\nVanilla extract 1L,VAN-EXT-1L,1,3,2,EA\nWildflower honey 3kg,HNY-WF-3,0,1,1,EA\nSliced almonds,NUT-ALM-SL,0.5,1.5,1,BAG\n"}}, {"file": "BV_PO_export_55821.xlsx", "format": "Excel", "received": "2026-09-25T06:30", "received_source": "export timestamp", "customer": {"as_written": "Bramble & Vine", "sender_email": "", "account_id": "ACC-063", "method": "known alias", "confidence": 0.98, "best_guess": null, "domain_account": null}, "po_number": "BV-55821", "lines": [{"as_written": "FLOUR TIPO 00 25KG", "qty_written": "6 BAG", "item_code": "FLR-00-25", "price_on_document": null, "claude_candidates": ["FLR-00-25"], "inferred": false, "qty": 6, "unit_note": "", "source": "document", "sku": "FLR-00-25", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 1, "product": "Tipo 00 pizza flour 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 28.31, "line_total": 169.86}, {"as_written": "MOZZ FIOR DI LATTE 12X250G", "qty_written": "4 CS", "item_code": "CHS-MOZ-FD", "price_on_document": null, "claude_candidates": ["CHS-MOZ-FD"], "inferred": false, "qty": 4, "unit_note": "", "source": "document", "sku": "CHS-MOZ-FD", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 2, "product": "Fresh mozzarella fior di latte 250 g", "sell_unit": "case", "pack": "12 x 250 g", "candidate_names": {}, "unit_price": 45.6, "line_total": 182.4}, {"as_written": "TOMATOES CRUSHED #10", "qty_written": "3 CS", "item_code": "", "price_on_document": null, "claude_candidates": ["TOM-CR-10"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "TOM-CR-10", "method": "Claude's reading, confirmed by spelling match", "confidence": 0.93, "candidates": [], "rejected_skus": [], "n": 3, "product": "Crushed tomatoes #10 can", "sell_unit": "case", "pack": "6 x #10 can", "candidate_names": {}, "unit_price": 30.78, "line_total": 92.34}, {"as_written": "EGGS LARGE 15DZ", "qty_written": "30 DZ", "item_code": "EGG-LG-15", "price_on_document": null, "claude_candidates": ["EGG-LG-15"], "inferred": false, "qty": 2, "unit_note": "Claude kept 30 DZ as written; code converted it to 2 cases of 15 dozen", "source": "document", "sku": "EGG-LG-15", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 4, "product": "Large eggs, 15 dozen", "sell_unit": "case", "pack": "15 dozen", "candidate_names": {}, "unit_price": 49.88, "line_total": 99.76}, {"as_written": "BUTTER UNSALTED 1LB", "qty_written": "72 LB", "item_code": "BTR-UNS-36", "price_on_document": null, "claude_candidates": ["BTR-UNS-36"], "inferred": false, "qty": 2, "unit_note": "Claude kept 72 LB as written; code converted it to 2 × 36 lb cases", "source": "document", "sku": "BTR-UNS-36", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 5, "product": "Unsalted butter 1 lb", "sell_unit": "case", "pack": "36 x 1 lb", "candidate_names": {}, "unit_price": 134.9, "line_total": 269.8}, {"as_written": "OIL OLIVE PURE 5L", "qty_written": "2 CS", "item_code": "", "price_on_document": null, "claude_candidates": ["OLV-PO-5L"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "OLV-PO-5L", "method": "Claude's reading, confirmed by spelling match", "confidence": 0.93, "candidates": [], "rejected_skus": [], "n": 6, "product": "Pure olive oil 5 L jug", "sell_unit": "case", "pack": "3 x 5 L", "candidate_names": {}, "unit_price": 91.2, "line_total": 182.4}, {"as_written": "VINEGAR RED WINE 5L", "qty_written": "1 EA", "item_code": "VIN-RW-5L", "price_on_document": null, "claude_candidates": ["VIN-RW-5L"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "VIN-RW-5L", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 7, "product": "Red wine vinegar 5 L", "sell_unit": "jug", "pack": "5 L jug", "candidate_names": {}, "unit_price": 18.52, "line_total": 18.52}, {"as_written": "CHEESE PARMIGIANO REGG 24M", "qty_written": "1 CS", "item_code": "CHS-PRM-2", "price_on_document": null, "claude_candidates": ["CHS-PRM-2"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "CHS-PRM-2", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 8, "product": "Parmigiano Reggiano 24-month wedges", "sell_unit": "case", "pack": "2 x 2.5 kg", "candidate_names": {}, "unit_price": 91.2, "line_total": 91.2}], "requested_as_written": "09/28/2026", "delivery_instructions": "", "notes_for_reviewer": ["Eggs ordered as 30 DZ on a 15-dozen case SKU; units left as written.", "Butter ordered as 72 LB on a 36 x 1 lb case SKU; units left as written.", "Date 09/28/2026 read as US format (MM/DD).", "No sender email or contact name in the export."], "unmatched_adjustments": [], "subtotal": 1106.28, "requested_date": "2026-09-28", "delivery_date": "2026-09-28", "delivery_note": "", "reasons": [], "checks": [{"ok": true, "text": "Customer matched to ACC-063 Bramble & Vine Restaurant Group (matched by: known alias)"}, {"ok": true, "text": "8 of 8 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "text": "PO number BV-55821 present (this account requires one)"}, {"ok": true, "text": "Priced from the Preferred price list, never from the document"}, {"ok": true, "text": "$1,106.28 meets the $400.00 account minimum"}, {"ok": true, "text": "Delivery Mon 28 Sep is on this account's route (Mon, Wed, Fri)"}], "notes": ["Driver: Liftgate required"], "status": "AUTO-APPROVED", "account": {"id": "ACC-063", "name": "Bramble & Vine Restaurant Group", "tier": "Preferred", "delivery_days": "Mon, Wed, Fri", "min_order": 400.0, "payment_terms": "Net 30", "rules": ["Requires PO number", "Liftgate required"], "po_required": true, "aliases": "Bramble & Vine; B&V Group"}, "extraction": {"file": "BV_PO_export_55821.xlsx", "customer_as_written": "Bramble & Vine", "contact_name": "", "sender_email": "", "po_number": "BV-55821", "requested_date_as_written": "09/28/2026", "requested_date": "2026-09-28", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "FLOUR TIPO 00 25KG", "quantity": 6, "unit_as_written": "BAG", "item_code_on_document": "FLR-00-25", "unit_price_on_document": 0, "sku_candidates": ["FLR-00-25"], "quantity_inferred": false}, {"text_as_written": "MOZZ FIOR DI LATTE 12X250G", "quantity": 4, "unit_as_written": "CS", "item_code_on_document": "CHS-MOZ-FD", "unit_price_on_document": 0, "sku_candidates": ["CHS-MOZ-FD"], "quantity_inferred": false}, {"text_as_written": "TOMATOES CRUSHED #10", "quantity": 3, "unit_as_written": "CS", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["TOM-CR-10"], "quantity_inferred": false}, {"text_as_written": "EGGS LARGE 15DZ", "quantity": 30, "unit_as_written": "DZ", "item_code_on_document": "EGG-LG-15", "unit_price_on_document": 0, "sku_candidates": ["EGG-LG-15"], "quantity_inferred": false}, {"text_as_written": "BUTTER UNSALTED 1LB", "quantity": 72, "unit_as_written": "LB", "item_code_on_document": "BTR-UNS-36", "unit_price_on_document": 0, "sku_candidates": ["BTR-UNS-36"], "quantity_inferred": false}, {"text_as_written": "OIL OLIVE PURE 5L", "quantity": 2, "unit_as_written": "CS", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["OLV-PO-5L"], "quantity_inferred": false}, {"text_as_written": "VINEGAR RED WINE 5L", "quantity": 1, "unit_as_written": "EA", "item_code_on_document": "VIN-RW-5L", "unit_price_on_document": 0, "sku_candidates": ["VIN-RW-5L"], "quantity_inferred": false}, {"text_as_written": "CHEESE PARMIGIANO REGG 24M", "quantity": 1, "unit_as_written": "CS", "item_code_on_document": "CHS-PRM-2", "unit_price_on_document": 0, "sku_candidates": ["CHS-PRM-2"], "quantity_inferred": false}], "delivery_instructions": "", "notes_for_reviewer": ["Eggs ordered as 30 DZ on a 15-dozen case SKU; units left as written.", "Butter ordered as 72 LB on a 36 x 1 lb case SKU; units left as written.", "Date 09/28/2026 read as US format (MM/DD).", "No sender email or contact name in the export."]}, "id": "ORD-0005", "source": {"raw": "Purchase Order Export |  | generated 2026-09-25 06:30\n\nPO Ref | Location | Req. Delivery | Vendor Part No | Item Description | Pack | Order Qty | UOM\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | FLR-00-25 | FLOUR TIPO 00 25KG | 25KG | 6 | BAG\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | CHS-MOZ-FD | MOZZ FIOR DI LATTE 12X250G | 12/250G | 4 | CS\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 |  | TOMATOES CRUSHED #10 | 6/#10 | 3 | CS\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | EGG-LG-15 | EGGS LARGE 15DZ | 15DZ | 30 | DZ\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | BTR-UNS-36 | BUTTER UNSALTED 1LB | 36/1LB | 72 | LB\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 |  | OIL OLIVE PURE 5L | 3/5L | 2 | CS\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | VIN-RW-5L | VINEGAR RED WINE 5L | 5L | 1 | EA\nBV-55821 | Bramble & Vine - Eastside | 09/28/2026 | CHS-PRM-2 | CHEESE PARMIGIANO REGG 24M | 2/2.5KG | 1 | CS\n\nSYNTHETIC DEMO DATA - fictional businesses, not real customers", "rows": [["Purchase Order Export", "", "generated 2026-09-25 06:30"], [], ["PO Ref", "Location", "Req. Delivery", "Vendor Part No", "Item Description", "Pack", "Order Qty", "UOM"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "FLR-00-25", "FLOUR TIPO 00 25KG", "25KG", "6", "BAG"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "CHS-MOZ-FD", "MOZZ FIOR DI LATTE 12X250G", "12/250G", "4", "CS"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "", "TOMATOES CRUSHED #10", "6/#10", "3", "CS"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "EGG-LG-15", "EGGS LARGE 15DZ", "15DZ", "30", "DZ"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "BTR-UNS-36", "BUTTER UNSALTED 1LB", "36/1LB", "72", "LB"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "", "OIL OLIVE PURE 5L", "3/5L", "2", "CS"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "VIN-RW-5L", "VINEGAR RED WINE 5L", "5L", "1", "EA"], ["BV-55821", "Bramble & Vine - Eastside", "09/28/2026", "CHS-PRM-2", "CHEESE PARMIGIANO REGG 24M", "2/2.5KG", "1", "CS"], [], ["SYNTHETIC DEMO DATA - fictional businesses, not real customers"]]}}, {"file": "chat_export_2026-09-25.txt", "format": "Chat", "received": "2026-09-25T07:12", "received_source": "chat timestamp", "customer": {"as_written": "Casa Verde", "sender_email": "", "account_id": "ACC-071", "method": "known alias", "confidence": 0.98, "best_guess": null, "domain_account": null}, "po_number": "", "lines": [{"as_written": "fryer oil", "qty_written": "4", "item_code": "", "price_on_document": null, "claude_candidates": ["CAN-FRY-20"], "inferred": false, "qty": 4, "unit_note": "", "source": "document", "sku": "CAN-FRY-20", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 1, "product": "Canola frying oil 20 L", "sell_unit": "jug", "pack": "20 L jug", "candidate_names": {}, "unit_price": 46.5, "line_total": 186.0}, {"as_written": "12oz cups", "qty_written": "2 cs", "item_code": "", "price_on_document": null, "claude_candidates": ["CUP-12-1K"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "CUP-12-1K", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 2, "product": "Hot cups 12 oz, 1,000 ct", "sell_unit": "case", "pack": "1,000 ct", "candidate_names": {}, "unit_price": 64.0, "line_total": 128.0}, {"as_written": "lids to match", "qty_written": "2", "item_code": "", "price_on_document": null, "claude_candidates": ["LID-12-1K"], "inferred": true, "qty": 2, "unit_note": "quantity inferred by Claude from context, not written by the customer", "source": "document", "sku": "LID-12-1K", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 3, "product": "Lids for 12 oz hot cups, 1,000 ct", "sell_unit": "case", "pack": "1,000 ct", "candidate_names": {}, "unit_price": 38.0, "line_total": 76.0}, {"as_written": "large gloves", "qty_written": "1 box", "item_code": "", "price_on_document": null, "claude_candidates": ["GLV-NIT-L"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "GLV-NIT-L", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 4, "product": "Nitrile gloves, large, box of 100", "sell_unit": "box", "pack": "100 ct box", "candidate_names": {}, "unit_price": 9.2, "line_total": 9.2}], "requested_as_written": "monday", "delivery_instructions": "", "notes_for_reviewer": ["Fryer oil corrected from 3 to 4; final quantity used.", "Lid quantity not written; inferred 2 from 'to match' the 2 cs of cups."], "unmatched_adjustments": [], "subtotal": 399.2, "requested_date": "2026-09-28", "delivery_date": "2026-09-28", "delivery_note": "", "reasons": [], "checks": [{"ok": true, "text": "Customer matched to ACC-071 Casa Verde Taqueria (matched by: known alias)"}, {"ok": true, "text": "4 of 4 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "info": true, "text": "1 quantity not written by the customer but inferred from context ('lids to match'), labelled on the line"}, {"ok": true, "text": "Priced from the Standard price list, never from the document"}, {"ok": true, "text": "$399.20 meets the $150.00 account minimum"}, {"ok": true, "text": "Delivery Mon 28 Sep is on this account's route (Mon, Thu)"}], "notes": ["Driver: Rear entrance delivery", "Collect payment on delivery (COD)"], "status": "AUTO-APPROVED", "account": {"id": "ACC-071", "name": "Casa Verde Taqueria", "tier": "Standard", "delivery_days": "Mon, Thu", "min_order": 150.0, "payment_terms": "COD", "rules": ["Rear entrance delivery"], "po_required": false, "aliases": "Casa Verde"}, "extraction": {"file": "chat_export_2026-09-25.txt", "customer_as_written": "Casa Verde", "contact_name": "Sofi", "sender_email": "", "po_number": "", "requested_date_as_written": "monday", "requested_date": "2026-09-28", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "fryer oil", "quantity": 4, "unit_as_written": "", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["CAN-FRY-20"], "quantity_inferred": false}, {"text_as_written": "12oz cups", "quantity": 2, "unit_as_written": "cs", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["CUP-12-1K"], "quantity_inferred": false}, {"text_as_written": "lids to match", "quantity": 2, "unit_as_written": "", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["LID-12-1K"], "quantity_inferred": true}, {"text_as_written": "large gloves", "quantity": 1, "unit_as_written": "box", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["GLV-NIT-L"], "quantity_inferred": false}], "delivery_instructions": "", "notes_for_reviewer": ["Fryer oil corrected from 3 to 4; final quantity used.", "Lid quantity not written; inferred 2 from 'to match' the 2 cs of cups."]}, "id": "ORD-0006", "source": {"raw": "[25/09/2026, 07:12] Sofi (Casa Verde): morning!! 🌮\n[25/09/2026, 07:12] Sofi (Casa Verde): can we get 3 fryer oil, 2 cs 12oz cups + lids to match, 1 box large gloves\n[25/09/2026, 07:13] Sofi (Casa Verde): for monday pls 🙏\n[25/09/2026, 07:20] Sofi (Casa Verde): actually make it 4 fryer oil, busy weekend\n"}}, {"file": "email_2026-09-25_0814.eml", "format": "Email", "received": "2026-09-25T08:14", "received_source": "email header", "customer": {"as_written": "Marigold Row Café", "sender_email": "jess@marigoldrow.example", "account_id": "ACC-045", "method": "exact name + sender's email domain", "confidence": 1.0, "best_guess": null, "domain_account": "ACC-045"}, "po_number": "", "lines": [{"as_written": "butter", "qty_written": "2 cases", "item_code": "", "price_on_document": null, "claude_candidates": ["BTR-UNS-36", "BTR-SAL-36"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": null, "method": "wording fits several products", "confidence": 0.5, "candidates": ["BTR-SAL-36", "BTR-UNS-36"], "rejected_skus": [], "history_hint": "Order history points to Unsalted butter 1 lb (BTR-UNS-36): it was on 3 of their last 3 orders, the other option on none.", "n": 1, "product": "", "sell_unit": "case", "pack": "", "candidate_names": {"BTR-SAL-36": "Salted butter 1 lb", "BTR-UNS-36": "Unsalted butter 1 lb"}, "unit_price": null, "line_total": 0.0}, {"as_written": "heavy cream", "qty_written": "2", "item_code": "", "price_on_document": null, "claude_candidates": ["CRM-HVY-12"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "CRM-HVY-12", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 2, "product": "Heavy cream 36% 1 qt", "sell_unit": "case", "pack": "12 x 1 qt", "candidate_names": {}, "unit_price": 54.0, "line_total": 108.0}, {"as_written": "large eggs", "qty_written": "1 case", "item_code": "", "price_on_document": null, "claude_candidates": ["EGG-LG-15"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "EGG-LG-15", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 3, "product": "Large eggs, 15 dozen", "sell_unit": "case", "pack": "15 dozen", "candidate_names": {}, "unit_price": 52.5, "line_total": 52.5}, {"as_written": "icing sugar", "qty_written": "1 bag", "item_code": "", "price_on_document": null, "claude_candidates": ["SUG-IC-10"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "SUG-IC-10", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 4, "product": "Icing sugar 10 kg", "sell_unit": "bag", "pack": "10 kg bag", "candidate_names": {}, "unit_price": 18.7, "line_total": 18.7}], "requested_as_written": "Wednesday", "delivery_instructions": "", "notes_for_reviewer": ["Butter type (salted or unsalted) not specified."], "unmatched_adjustments": [], "subtotal": 179.2, "requested_date": "2026-09-30", "delivery_date": "2026-09-30", "delivery_note": "", "reasons": [{"code": "AMBIGUOUS_PRODUCT", "label": "ambiguous product", "text": "'butter' could be Salted butter 1 lb (BTR-SAL-36) or Unsalted butter 1 lb (BTR-UNS-36). Order history points to Unsalted butter 1 lb (BTR-UNS-36): it was on 3 of their last 3 orders, the other option on none.", "action": "Confirm with the customer; the answer is saved as this account's phrase so it's automatic next time."}, {"code": "PO_MISSING", "label": "PO missing", "text": "Marigold Row Café requires a PO number on every order and none was given.", "action": "Reply asking for the PO number; release once it's added."}], "checks": [{"ok": true, "text": "Customer matched to ACC-045 Marigold Row Café (matched by: exact name + sender's email domain)"}, {"ok": false, "text": "3 of 4 lines matched to a catalog SKU and whole selling units"}, {"ok": false, "text": "PO number missing (this account requires one)"}, {"ok": true, "text": "Priced from the Standard price list, never from the document"}, {"ok": true, "text": "$179.20 meets the $150.00 account minimum (1 line not priced yet)"}, {"ok": true, "text": "Delivery Wed 30 Sep is on this account's route (Mon, Wed, Fri)"}], "notes": [], "status": "NEEDS REVIEW", "account": {"id": "ACC-045", "name": "Marigold Row Café", "tier": "Standard", "delivery_days": "Mon, Wed, Fri", "min_order": 150.0, "payment_terms": "Net 14", "rules": ["Requires PO number"], "po_required": true, "aliases": "Marigold Row; Marigold Row Cafe"}, "extraction": {"file": "email_2026-09-25_0814.eml", "customer_as_written": "Marigold Row Café", "contact_name": "Jess", "sender_email": "jess@marigoldrow.example", "po_number": "", "requested_date_as_written": "Wednesday", "requested_date": "2026-09-30", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "butter", "quantity": 2, "unit_as_written": "cases", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["BTR-UNS-36", "BTR-SAL-36"], "quantity_inferred": false}, {"text_as_written": "heavy cream", "quantity": 2, "unit_as_written": "", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["CRM-HVY-12"], "quantity_inferred": false}, {"text_as_written": "large eggs", "quantity": 1, "unit_as_written": "case", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["EGG-LG-15"], "quantity_inferred": false}, {"text_as_written": "icing sugar", "quantity": 1, "unit_as_written": "bag", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["SUG-IC-10"], "quantity_inferred": false}], "delivery_instructions": "", "notes_for_reviewer": ["Butter type (salted or unsalted) not specified."]}, "id": "ORD-0007", "source": {"raw": "From: Jess <jess@marigoldrow.example>\nTo: orders@bayline.example\nDate: Fri, 25 Sep 2026 08:14:37 -0400\nSubject: order for wednesday\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nHi there,\n\nCould we please get 2 cases of butter, 2 heavy cream, 1 case of large eggs and a bag of icing sugar for Wednesday?\n\nThanks so much!\nJess\nMarigold Row Café\n"}}, {"file": "email_2026-09-25_0902.eml", "format": "Email", "received": "2026-09-25T09:02", "received_source": "email header", "customer": {"as_written": "Pier Road Kitchen", "sender_email": "dave.pierroad@mailbox.example", "account_id": null, "method": "", "confidence": 0.0, "best_guess": {"id": "ACC-094", "name": "Pierside Kitchen & Bar", "score": 0.6}, "domain_account": null}, "po_number": "", "lines": [{"as_written": "large eggs", "qty_written": "6 cs", "item_code": "", "price_on_document": null, "claude_candidates": ["EGG-LG-15"], "inferred": false, "qty": 6, "unit_note": "", "source": "document", "sku": "EGG-LG-15", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 1, "product": "Large eggs, 15 dozen", "sell_unit": "case", "pack": "15 dozen", "candidate_names": {}, "unit_price": 52.5, "line_total": 315.0}, {"as_written": "AP flour", "qty_written": "3 bags", "item_code": "", "price_on_document": null, "claude_candidates": ["FLR-AP-25"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "FLR-AP-25", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 2, "product": "All-purpose flour 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 21.4, "line_total": 64.2}, {"as_written": "canola frying oil", "qty_written": "2", "item_code": "", "price_on_document": null, "claude_candidates": ["CAN-FRY-20"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "CAN-FRY-20", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 3, "product": "Canola frying oil 20 L", "sell_unit": "jug", "pack": "20 L jug", "candidate_names": {}, "unit_price": 46.5, "line_total": 93.0}], "requested_as_written": "next Tuesday", "delivery_instructions": "Customer would like to pay on delivery for now.", "notes_for_reviewer": ["New customer, first order; likely no existing account.", "Referred by Harbor St Bistro (Marco), which is not the customer.", "Requests pay on delivery."], "unmatched_adjustments": [], "subtotal": 472.2, "requested_date": "2026-09-29", "delivery_date": "", "delivery_note": "", "reasons": [{"code": "UNKNOWN_CUSTOMER", "label": "unknown customer", "text": "'Pier Road Kitchen' (dave.pierroad@mailbox.example) is not one of the 120 accounts. The closest account name, Pierside Kitchen & Bar, is only a 60% name match: too weak to trust.", "action": "Set up a new account (credit check, price tier, delivery days) or link this sender to an existing account."}], "checks": [{"ok": false, "text": "Customer not found in the account list"}, {"ok": true, "text": "3 of 3 lines matched to a catalog SKU and whole selling units"}], "notes": [], "status": "NEEDS REVIEW", "account": null, "extraction": {"file": "email_2026-09-25_0902.eml", "customer_as_written": "Pier Road Kitchen", "contact_name": "Dave", "sender_email": "dave.pierroad@mailbox.example", "po_number": "", "requested_date_as_written": "next Tuesday", "requested_date": "2026-09-29", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "large eggs", "quantity": 6, "unit_as_written": "cs", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["EGG-LG-15"], "quantity_inferred": false}, {"text_as_written": "AP flour", "quantity": 3, "unit_as_written": "bags", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["FLR-AP-25"], "quantity_inferred": false}, {"text_as_written": "canola frying oil", "quantity": 2, "unit_as_written": "", "item_code_on_document": "", "unit_price_on_document": 0, "sku_candidates": ["CAN-FRY-20"], "quantity_inferred": false}], "delivery_instructions": "Customer would like to pay on delivery for now.", "notes_for_reviewer": ["New customer, first order; likely no existing account.", "Referred by Harbor St Bistro (Marco), which is not the customer.", "Requests pay on delivery."]}, "id": "ORD-0008", "source": {"raw": "From: Dave <dave.pierroad@mailbox.example>\nTo: orders@bayline.example\nDate: Fri, 25 Sep 2026 09:02:51 -0400\nSubject: new customer - first order?\nMIME-Version: 1.0\nContent-Type: text/plain; charset=\"utf-8\"\n\nHi,\n\nWe just opened Pier Road Kitchen down on the waterfront. Marco at Harbor St Bistro said you're the people to call.\nCould you do 6 cs large eggs, 3 bags AP flour and 2 canola frying oil for next Tuesday?\n\nHappy to pay on delivery for now.\n\nDave\nPier Road Kitchen\n"}}, {"file": "PO_LGH-20931.pdf", "format": "PDF", "received": "2026-09-25T10:00", "received_source": "processed", "customer": {"as_written": "Lakeside Grand Hotel", "sender_email": "", "account_id": "ACC-052", "method": "exact name", "confidence": 1.0, "best_guess": null, "domain_account": null}, "po_number": "LGH-PO-20931", "lines": [{"as_written": "Extra Virgin Olive Oil 12x1L", "qty_written": "6 CS", "item_code": "OLV-EV-1L", "price_on_document": 106.2, "claude_candidates": ["OLV-EV-1L"], "inferred": false, "qty": 6, "unit_note": "", "source": "document", "sku": "OLV-EV-1L", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 1, "product": "Extra virgin olive oil 1 L", "sell_unit": "case", "pack": "12 x 1 L", "candidate_names": {}, "unit_price": 106.2, "line_total": 637.2}, {"as_written": "All Purpose Flour 25kg", "qty_written": "8 BAG", "item_code": "FLR-AP-25", "price_on_document": 19.26, "claude_candidates": ["FLR-AP-25"], "inferred": false, "qty": 8, "unit_note": "", "source": "document", "sku": "FLR-AP-25", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 2, "product": "All-purpose flour 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 19.26, "line_total": 154.08}, {"as_written": "Granulated Sugar 25kg", "qty_written": "4 BAG", "item_code": "SUG-GR-25", "price_on_document": 28.08, "claude_candidates": ["SUG-GR-25"], "inferred": false, "qty": 4, "unit_note": "", "source": "document", "sku": "SUG-GR-25", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 3, "product": "Granulated sugar 25 kg", "sell_unit": "bag", "pack": "25 kg bag", "candidate_names": {}, "unit_price": 28.08, "line_total": 112.32}, {"as_written": "Heavy Cream 36% 12x1qt", "qty_written": "10 CS", "item_code": "CRM-HVY-12", "price_on_document": 48.6, "claude_candidates": ["CRM-HVY-12"], "inferred": false, "qty": 10, "unit_note": "", "source": "document", "sku": "CRM-HVY-12", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 4, "product": "Heavy cream 36% 1 qt", "sell_unit": "case", "pack": "12 x 1 qt", "candidate_names": {}, "unit_price": 48.6, "line_total": 486.0}, {"as_written": "Eggs, Large, 15 doz", "qty_written": "6 CS", "item_code": "EGG-LG-15", "price_on_document": 47.25, "claude_candidates": ["EGG-LG-15"], "inferred": false, "qty": 6, "unit_note": "", "source": "document", "sku": "EGG-LG-15", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 5, "product": "Large eggs, 15 dozen", "sell_unit": "case", "pack": "15 dozen", "candidate_names": {}, "unit_price": 47.25, "line_total": 283.5}, {"as_written": "Butter, Unsalted 36x1lb", "qty_written": "4 CS", "item_code": "BTR-UNS-36", "price_on_document": 127.8, "claude_candidates": ["BTR-UNS-36"], "inferred": false, "qty": 4, "unit_note": "", "source": "document", "sku": "BTR-UNS-36", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 6, "product": "Unsalted butter 1 lb", "sell_unit": "case", "pack": "36 x 1 lb", "candidate_names": {}, "unit_price": 127.8, "line_total": 511.2}, {"as_written": "Espresso Beans 6x1kg", "qty_written": "3 CS", "item_code": "COF-ESP-6", "price_on_document": 118.8, "claude_candidates": ["COF-ESP-6"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "COF-ESP-6", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 7, "product": "Espresso beans 6 x 1 kg", "sell_unit": "case", "pack": "6 x 1 kg", "candidate_names": {}, "unit_price": 118.8, "line_total": 356.4}, {"as_written": "Dinner Napkins 2-ply 3000ct", "qty_written": "2 CS", "item_code": "NAP-DIN-3K", "price_on_document": 26.1, "claude_candidates": ["NAP-DIN-3K"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "NAP-DIN-3K", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 8, "product": "Dinner napkins 2-ply, 3,000 ct", "sell_unit": "case", "pack": "3,000 ct", "candidate_names": {}, "unit_price": 26.1, "line_total": 52.2}, {"as_written": "Basmati Rice 10kg", "qty_written": "5 BAG", "item_code": "RCE-BAS-10", "price_on_document": 17.46, "claude_candidates": ["RCE-BAS-10"], "inferred": false, "qty": 5, "unit_note": "", "source": "document", "sku": "RCE-BAS-10", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 9, "product": "Basmati rice 10 kg", "sell_unit": "bag", "pack": "10 kg bag", "candidate_names": {}, "unit_price": 17.46, "line_total": 87.3}, {"as_written": "Fior di Latte 12x250g", "qty_written": "3 CS", "item_code": "CHS-MOZ-FD", "price_on_document": 43.2, "claude_candidates": ["CHS-MOZ-FD"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "CHS-MOZ-FD", "method": "SKU printed on the document", "confidence": 1.0, "candidates": [], "rejected_skus": [], "n": 10, "product": "Fresh mozzarella fior di latte 250 g", "sell_unit": "case", "pack": "12 x 250 g", "candidate_names": {}, "unit_price": 43.2, "line_total": 129.6}], "requested_as_written": "29-Sep-2026", "delivery_instructions": "Ship to Receiving Dock B, 1 Shoreline Drive. Split pallets, max 20 cases per pallet; no forklift at Dock B. Receiving hours 07:00-11:00. Reference PO number on all invoices.", "notes_for_reviewer": ["PO total stated as 2,809.80 USD; line extensions add up to the same.", "Terms Net 45 on the PO."], "unmatched_adjustments": [], "subtotal": 2809.8, "requested_date": "2026-09-29", "delivery_date": "2026-09-29", "delivery_note": "", "reasons": [], "checks": [{"ok": true, "text": "Customer matched to ACC-052 Lakeside Grand Hotel (matched by: exact name)"}, {"ok": true, "text": "10 of 10 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "text": "PO number LGH-PO-20931 present (this account requires one)"}, {"ok": true, "text": "Priced from the Key account price list, never from the document"}, {"ok": true, "text": "Prices printed on the document match our price list on 10 of 10 lines"}, {"ok": true, "text": "$2,809.80 meets the $500.00 account minimum"}, {"ok": true, "text": "Delivery Tue 29 Sep is on this account's route (Mon-Fri)"}], "notes": ["Split pallets: 51 units → 3 pallets of max 20", "Driver: Receiving dock 7-11am"], "status": "AUTO-APPROVED", "account": {"id": "ACC-052", "name": "Lakeside Grand Hotel", "tier": "Key account", "delivery_days": "Mon-Fri", "min_order": 500.0, "payment_terms": "Net 45", "rules": ["Requires PO number", "Always split pallets (max 20 cases)", "Receiving dock 7-11am"], "po_required": true, "aliases": "Lakeside Grand; LGH Food & Beverage"}, "extraction": {"file": "PO_LGH-20931.pdf", "customer_as_written": "Lakeside Grand Hotel", "contact_name": "", "sender_email": "", "po_number": "LGH-PO-20931", "requested_date_as_written": "29-Sep-2026", "requested_date": "2026-09-29", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "Extra Virgin Olive Oil 12x1L", "quantity": 6, "unit_as_written": "CS", "item_code_on_document": "OLV-EV-1L", "unit_price_on_document": 106.2, "sku_candidates": ["OLV-EV-1L"], "quantity_inferred": false}, {"text_as_written": "All Purpose Flour 25kg", "quantity": 8, "unit_as_written": "BAG", "item_code_on_document": "FLR-AP-25", "unit_price_on_document": 19.26, "sku_candidates": ["FLR-AP-25"], "quantity_inferred": false}, {"text_as_written": "Granulated Sugar 25kg", "quantity": 4, "unit_as_written": "BAG", "item_code_on_document": "SUG-GR-25", "unit_price_on_document": 28.08, "sku_candidates": ["SUG-GR-25"], "quantity_inferred": false}, {"text_as_written": "Heavy Cream 36% 12x1qt", "quantity": 10, "unit_as_written": "CS", "item_code_on_document": "CRM-HVY-12", "unit_price_on_document": 48.6, "sku_candidates": ["CRM-HVY-12"], "quantity_inferred": false}, {"text_as_written": "Eggs, Large, 15 doz", "quantity": 6, "unit_as_written": "CS", "item_code_on_document": "EGG-LG-15", "unit_price_on_document": 47.25, "sku_candidates": ["EGG-LG-15"], "quantity_inferred": false}, {"text_as_written": "Butter, Unsalted 36x1lb", "quantity": 4, "unit_as_written": "CS", "item_code_on_document": "BTR-UNS-36", "unit_price_on_document": 127.8, "sku_candidates": ["BTR-UNS-36"], "quantity_inferred": false}, {"text_as_written": "Espresso Beans 6x1kg", "quantity": 3, "unit_as_written": "CS", "item_code_on_document": "COF-ESP-6", "unit_price_on_document": 118.8, "sku_candidates": ["COF-ESP-6"], "quantity_inferred": false}, {"text_as_written": "Dinner Napkins 2-ply 3000ct", "quantity": 2, "unit_as_written": "CS", "item_code_on_document": "NAP-DIN-3K", "unit_price_on_document": 26.1, "sku_candidates": ["NAP-DIN-3K"], "quantity_inferred": false}, {"text_as_written": "Basmati Rice 10kg", "quantity": 5, "unit_as_written": "BAG", "item_code_on_document": "RCE-BAS-10", "unit_price_on_document": 17.46, "sku_candidates": ["RCE-BAS-10"], "quantity_inferred": false}, {"text_as_written": "Fior di Latte 12x250g", "quantity": 3, "unit_as_written": "CS", "item_code_on_document": "CHS-MOZ-FD", "unit_price_on_document": 43.2, "sku_candidates": ["CHS-MOZ-FD"], "quantity_inferred": false}], "delivery_instructions": "Ship to Receiving Dock B, 1 Shoreline Drive. Split pallets, max 20 cases per pallet; no forklift at Dock B. Receiving hours 07:00-11:00. Reference PO number on all invoices.", "notes_for_reviewer": ["PO total stated as 2,809.80 USD; line extensions add up to the same.", "Terms Net 45 on the PO."]}, "id": "ORD-0009", "source": {"raw": "LAKESIDE GRAND HOTEL\nFood & Beverage Purchasing · 1 Shoreline Drive\nPURCHASE ORDER\nPO Number LGH-PO-20931\nPO Date 24-Sep-2026\nDelivery Date 29-Sep-2026\nTerms Net 45\nVENDOR\nBayline Provisions\nWholesale Foodservice\norders@bayline.example\nSHIP TO\nLakeside Grand Hotel\nReceiving Dock B\n1 Shoreline Drive\nBILL TO\nLakeside Grand Hotel\nAccounts Payable\nap@lakesidegrand.example\n# Vendor Item Description Qty UOM Unit Price Extended\n1 OLV-EV-1L Extra Virgin Olive Oil 12x1L 6 CS 106.20 637.20\n2 FLR-AP-25 All Purpose Flour 25kg 8 BAG 19.26 154.08\n3 SUG-GR-25 Granulated Sugar 25kg 4 BAG 28.08 112.32\n4 CRM-HVY-12 Heavy Cream 36% 12x1qt 10 CS 48.60 486.00\n5 EGG-LG-15 Eggs, Large, 15 doz 6 CS 47.25 283.50\n6 BTR-UNS-36 Butter, Unsalted 36x1lb 4 CS 127.80 511.20\n7 COF-ESP-6 Espresso Beans 6x1kg 3 CS 118.80 356.40\n8 NAP-DIN-3K Dinner Napkins 2-ply 3000ct 2 CS 26.10 52.20\n9 RCE-BAS-10 Basmati Rice 10kg 5 BAG 17.46 87.30\n10 CHS-MOZ-FD Fior di Latte 12x250g 3 CS 43.20 129.60\nPO TOTAL (USD) 2,809.80\nNotes: Split pallets please - max 20 cases per pallet, no forklift at Dock B. Receiving hours 07:00-11:00. Please\nreference PO number on all invoices.\nApproved by: F&B Purchasing Office\nSYNTHETIC DEMO DATA - fictional businesses, not real customers", "preview": "inputs/PO_LGH-20931.png"}}, {"file": "RR-2209_order.pdf", "format": "PDF", "received": "2026-09-25T10:00", "received_source": "processed", "customer": {"as_written": "Rosemary & Rye", "sender_email": "", "account_id": "ACC-088", "method": "known alias", "confidence": 0.98, "best_guess": null, "domain_account": null}, "po_number": "RR-2209", "lines": [{"as_written": "Olive oil, extra virgin, 3L tins", "qty_written": "2 cases", "item_code": "R-101", "price_on_document": null, "claude_candidates": ["OLV-EV-3L"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "OLV-EV-3L", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 1, "product": "Extra virgin olive oil 3 L tin", "sell_unit": "case", "pack": "4 x 3 L", "candidate_names": {}, "unit_price": 104.0, "line_total": 208.0}, {"as_written": "Arborio rice 5kg", "qty_written": "4 bags", "item_code": "R-114", "price_on_document": null, "claude_candidates": ["RCE-ARB-5"], "inferred": false, "qty": 4, "unit_note": "", "source": "document", "sku": "RCE-ARB-5", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 2, "product": "Arborio rice 5 kg", "sell_unit": "bag", "pack": "5 kg bag", "candidate_names": {}, "unit_price": 16.8, "line_total": 67.2}, {"as_written": "Balsamic vinegar 5L", "qty_written": "1", "item_code": "R-120", "price_on_document": null, "claude_candidates": ["VIN-BAL-5L"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "VIN-BAL-5L", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 3, "product": "Balsamic vinegar of Modena 5 L", "sell_unit": "jug", "pack": "5 L jug", "candidate_names": {}, "unit_price": 38.0, "line_total": 38.0}, {"as_written": "Penne rigate", "qty_written": "3 cases", "item_code": "R-126", "price_on_document": null, "claude_candidates": ["PST-PEN-5"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "PST-PEN-5", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 4, "product": "Penne rigate 5 kg", "sell_unit": "case", "pack": "5 kg case", "candidate_names": {}, "unit_price": 12.6, "line_total": 37.8}, {"as_written": "Parmesan (24 mo)", "qty_written": "1 case", "item_code": "R-131", "price_on_document": null, "claude_candidates": ["CHS-PRM-2"], "inferred": false, "qty": 1, "unit_note": "", "source": "document", "sku": "CHS-PRM-2", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 5, "product": "Parmigiano Reggiano 24-month wedges", "sell_unit": "case", "pack": "2 x 2.5 kg", "candidate_names": {}, "unit_price": 96.0, "line_total": 96.0}, {"as_written": "Cling film 18\"", "qty_written": "2 rolls", "item_code": "R-140", "price_on_document": null, "claude_candidates": ["FILM-18"], "inferred": false, "qty": 2, "unit_note": "", "source": "document", "sku": "FILM-18", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 6, "product": "Cling film 18 in x 2,000 ft", "sell_unit": "roll", "pack": "1 roll", "candidate_names": {}, "unit_price": 26.0, "line_total": 52.0}, {"as_written": "Gloves, nitrile, medium", "qty_written": "4 boxes", "item_code": "R-150", "price_on_document": null, "claude_candidates": ["GLV-NIT-M"], "inferred": false, "qty": 4, "unit_note": "", "source": "document", "sku": "GLV-NIT-M", "method": "Claude's reading, confirmed by spelling match", "confidence": 0.93, "candidates": [], "rejected_skus": [], "n": 7, "product": "Nitrile gloves, medium, box of 100", "sell_unit": "box", "pack": "100 ct box", "candidate_names": {}, "unit_price": 9.2, "line_total": 36.8}, {"as_written": "Heavy cream", "qty_written": "3 cases", "item_code": "R-155", "price_on_document": null, "claude_candidates": ["CRM-HVY-12"], "inferred": false, "qty": 3, "unit_note": "", "source": "document", "sku": "CRM-HVY-12", "method": "catalog alias", "confidence": 0.97, "candidates": [], "rejected_skus": [], "n": 8, "product": "Heavy cream 36% 1 qt", "sell_unit": "case", "pack": "12 x 1 qt", "candidate_names": {}, "unit_price": 54.0, "line_total": 162.0}], "requested_as_written": "Required by: 30/09/2026", "delivery_instructions": "Order is for a wedding on 3 October. No substitutions. If anything is short, call the kitchen before sending.", "notes_for_reviewer": ["Item codes R-1xx are the customer's own codes.", "Date read as DD/MM/YYYY (30/09/2026).", "No substitutions allowed; call kitchen if any item is short.", "Balsamic line has no unit written."], "unmatched_adjustments": [], "subtotal": 697.8, "requested_date": "2026-09-30", "delivery_date": "2026-09-30", "delivery_note": "", "reasons": [], "checks": [{"ok": true, "text": "Customer matched to ACC-088 Rosemary & Rye Catering Co. (matched by: known alias)"}, {"ok": true, "text": "8 of 8 lines matched to a catalog SKU and whole selling units"}, {"ok": true, "text": "Priced from the Standard price list, never from the document"}, {"ok": true, "text": "$697.80 meets the $250.00 account minimum"}, {"ok": true, "text": "Delivery Wed 30 Sep is on this account's route (Wed, Fri)"}], "notes": ["No substitutions: pick exactly as ordered; call the customer if anything is short", "Driver: Call on arrival"], "status": "AUTO-APPROVED", "account": {"id": "ACC-088", "name": "Rosemary & Rye Catering Co.", "tier": "Standard", "delivery_days": "Wed, Fri", "min_order": 250.0, "payment_terms": "Net 30", "rules": ["No substitutions", "Call on arrival"], "po_required": false, "aliases": "Rosemary & Rye; Rosemary and Rye; R&R Catering"}, "extraction": {"file": "RR-2209_order.pdf", "customer_as_written": "Rosemary & Rye", "contact_name": "", "sender_email": "", "po_number": "RR-2209", "requested_date_as_written": "Required by: 30/09/2026", "requested_date": "2026-09-30", "repeat_previous_order": false, "repeat_adjustments": [], "line_items": [{"text_as_written": "Olive oil, extra virgin, 3L tins", "quantity": 2, "unit_as_written": "cases", "item_code_on_document": "R-101", "unit_price_on_document": 0, "sku_candidates": ["OLV-EV-3L"], "quantity_inferred": false}, {"text_as_written": "Arborio rice 5kg", "quantity": 4, "unit_as_written": "bags", "item_code_on_document": "R-114", "unit_price_on_document": 0, "sku_candidates": ["RCE-ARB-5"], "quantity_inferred": false}, {"text_as_written": "Balsamic vinegar 5L", "quantity": 1, "unit_as_written": "", "item_code_on_document": "R-120", "unit_price_on_document": 0, "sku_candidates": ["VIN-BAL-5L"], "quantity_inferred": false}, {"text_as_written": "Penne rigate", "quantity": 3, "unit_as_written": "cases", "item_code_on_document": "R-126", "unit_price_on_document": 0, "sku_candidates": ["PST-PEN-5"], "quantity_inferred": false}, {"text_as_written": "Parmesan (24 mo)", "quantity": 1, "unit_as_written": "case", "item_code_on_document": "R-131", "unit_price_on_document": 0, "sku_candidates": ["CHS-PRM-2"], "quantity_inferred": false}, {"text_as_written": "Cling film 18\"", "quantity": 2, "unit_as_written": "rolls", "item_code_on_document": "R-140", "unit_price_on_document": 0, "sku_candidates": ["FILM-18"], "quantity_inferred": false}, {"text_as_written": "Gloves, nitrile, medium", "quantity": 4, "unit_as_written": "boxes", "item_code_on_document": "R-150", "unit_price_on_document": 0, "sku_candidates": ["GLV-NIT-M"], "quantity_inferred": false}, {"text_as_written": "Heavy cream", "quantity": 3, "unit_as_written": "cases", "item_code_on_document": "R-155", "unit_price_on_document": 0, "sku_candidates": ["CRM-HVY-12"], "quantity_inferred": false}], "delivery_instructions": "Order is for a wedding on 3 October. No substitutions. If anything is short, call the kitchen before sending.", "notes_for_reviewer": ["Item codes R-1xx are the customer's own codes.", "Date read as DD/MM/YYYY (30/09/2026).", "No substitutions allowed; call kitchen if any item is short.", "Balsamic line has no unit written."]}, "id": "ORD-0010", "source": {"raw": "ROSEMARY & RYE\ncatering & events · kitchen at 48 Mill Lane\nTo: Bayline Provisions Order No. RR-2209\nFrom: R&R kitchen Date: 24/09/2026\nRequired by: 30/09/2026\nItems\nR-101 Olive oil, extra virgin, 3L tins 2 cases\nR-114 Arborio rice 5kg 4 bags\nR-120 Balsamic vinegar 5L 1\nR-126 Penne rigate 3 cases\nR-131 Parmesan (24 mo) 1 case\nR-140 Cling film 18\" 2 rolls\nR-150 Gloves, nitrile, medium 4 boxes\nR-155 Heavy cream 3 cases\nThis order is for a wedding on 3 October - please no substitutions. If anything is short, call the kitchen\nbefore sending.\nThank you!\nSYNTHETIC DEMO DATA - fictional businesses, not real customers", "preview": "inputs/RR-2209_order.png"}}]}</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("order-data").textContent || "{}");
+  if (!D.orders) { document.getElementById("proof").textContent = "Run process_orders.py to fill this page."; return; }
+  var orders = D.orders;
+  var FEATURED = [
+    ["email_2026-09-24_1652.eml", "Informal email"],
+    ["PO_LGH-20931.pdf", "PDF purchase order"],
+    ["BV_PO_export_55821.xlsx", "Excel export"]
+  ];
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]; }); }
+  /* escape, then keep codes like BTR-UNS-36 or LGH-PO-20931 on one line */
+  function tx(s) { return esc(s).replace(/\b[A-Z]{2,5}(?:-[A-Z0-9]+)+\b/g, '<span class="nw">$&</span>'); }
+  function money(x) { return "$" + Number(x || 0).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+  var WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MO = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function day(iso) {
+    if (!iso) return "";
+    var d = new Date(iso.slice(0, 10) + "T12:00:00");
+    return WD[d.getDay()] + " " + d.getDate() + " " + MO[d.getMonth()];
+  }
+  function time(iso) { return day(iso) + ", " + iso.slice(11, 16); }
+  function when(o, short) {
+    if (o.received_source === "processed") return "processed " + (short ? "" : day(o.received) + ", ") + o.received.slice(11, 16);
+    var verb = {"chat timestamp": "sent ", "export timestamp": "exported ", "email header": ""}[o.received_source] || "";
+    return (short ? "" : verb) + time(o.received);
+  }
+  function isOk(o) { return o.status === "AUTO-APPROVED"; }
+  function stamp(o) { return '<span class="stamp ' + (isOk(o) ? "ok" : "warn") + '">' + (isOk(o) ? "Approved" : "Held") + "</span>"; }
+  function who(o) { return o.account ? o.account.name : (o.customer.as_written || "Unknown sender"); }
+  function inferred(o) { return o.lines.filter(function (l) { return l.inferred; }).length; }
+  var ICON = {
+    ok: '<svg class="i-ok" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    no: '<svg class="i-no" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v7.5M8 13v.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    note: '<svg class="i-note" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.6" fill="currentColor"/></svg>'
+  };
+
+  /* ---------- headline, proof, footer */
+  var c = D.counts, ev = D.eval, secs = D.timing.total_s;
+  document.getElementById("headline").innerHTML =
+    '<span class="from">' + c.orders + " orders, " + c.formats.length + " formats → </span><span>" +
+    c.approved + " approved, " + c.review + " held with the reason why</span>";
+  if (ev) {
+    var allRight = ev.flags_correct === ev.orders && ev.lines_correct === ev.lines;
+    var result = allRight ? "all decisions and all " + ev.lines + " lines correct"
+      : ev.flags_correct + " of " + ev.orders + " decisions and " + ev.lines_correct + " of " + ev.lines + " lines correct";
+    document.getElementById("proof").innerHTML = "On my own test set (" + ev.orders +
+      " orders, answers written before the run): <strong>" + result + "</strong>. That proves the pipeline, not accuracy on your orders — " +
+      "before go-live I measure it on a few hundred of your past orders.";
+  }
+  document.getElementById("foot-run").textContent = "Run as of " + D.as_of.replace("T", " ") + " with " + D.model + ": " +
+    (secs < 60 ? "under a minute for all ten" : secs < 90 ? "about a minute for all ten"
+      : "about " + Math.round(secs / 60) + " minutes for all ten") +
+    ", in one batched model call; matching, rules and pricing took " + D.timing.rules_ms +
+    " ms. All order data on this page comes from results.json, written by the pipeline.";
+
+  /* ---------- ticket rail */
+  var rail = document.getElementById("rail");
+  rail.innerHTML = orders.map(function (o, i) {
+    var labels = o.reasons.map(function (r) { return r.label; }).filter(function (v, k, a) { return a.indexOf(v) === k; });
+    var inf = inferred(o);
+    return '<li><button type="button" class="ticket" data-i="' + i + '" aria-pressed="false" style="--i:' + i + '">' +
+      '<span class="t-top"><span class="t-fmt">' + esc(o.format) + '</span><span>' + esc(when(o, true)) + '</span></span>' +
+      '<span class="t-who' + (o.account ? "" : " unknown") + '">' + esc(o.account ? o.account.name : "Unknown: " + (o.customer.as_written || "sender")) + '</span>' +
+      '<span class="t-sum num">' + o.lines.length + ' lines, ' + money(o.subtotal) + '</span>' +
+      '<span class="t-perf" aria-hidden="true"></span>' + stamp(o) +
+      (isOk(o) ? (inf ? '<span class="why soft">' + inf + ' inferred quantity, labelled</span>' : "")
+               : '<span class="why">' + esc(labels.join(", ")) + '</span>') +
+      '</button></li>';
+  }).join("");
+  rail.addEventListener("click", function (e) {
+    var b = e.target.closest(".ticket"); if (!b) return;
+    show(+b.dataset.i, true);
+  });
+
+  /* ---------- tabs */
+  var tabs = document.getElementById("tabs");
+  tabs.innerHTML = FEATURED.map(function (f) {
+    var i = orders.findIndex(function (o) { return o.file === f[0]; });
+    return i < 0 ? "" : '<button type="button" class="tab" role="tab" data-i="' + i + '" aria-selected="false">' + esc(f[1]) + '</button>';
+  }).join("");
+  tabs.addEventListener("click", function (e) { var b = e.target.closest(".tab"); if (b) show(+b.dataset.i, false); });
+
+  /* ---------- viewer */
+  function sourcePane(o) {
+    var s = o.source || {}, body;
+    var link = '<a class="open-link" href="inputs/' + encodeURIComponent(o.file) + '" target="_blank" rel="noopener">Open the original file</a>';
+    if (s.preview) {
+      body = '<a href="inputs/' + encodeURIComponent(o.file) + '" target="_blank" rel="noopener"><img class="pdfshot" src="' + esc(s.preview) +
+        '" alt="First page of ' + esc(o.file) + '" loading="lazy"></a>';
+    } else if (s.rows) {
+      var width = Math.max.apply(null, s.rows.map(function (r) { return r.length; }));
+      var letters = '<tr class="cols"><td class="rn"></td>';
+      for (var L = 0; L < width; L++) letters += "<td>" + String.fromCharCode(65 + L) + "</td>";
+      body = '<div class="sheet"><table>' + letters + "</tr>" + s.rows.map(function (r, n) {
+        var hdr = r.indexOf("Vendor Part No") >= 0 ? ' class="hdr"' : "";
+        var filled = r.filter(function (v) { return v !== ""; }).length, cells = [];
+        if (filled <= 1) cells.push('<td colspan="' + width + '">' + esc(r[0] || "") + "</td>");
+        else for (var k = 0; k < width; k++) cells.push("<td>" + esc(r[k] || "") + "</td>");
+        return "<tr" + hdr + '><td class="rn">' + (n + 1) + "</td>" + cells.join("") + "</tr>";
+      }).join("") + "</table></div>";
+    } else {
+      body = '<pre class="doc">' + esc(s.raw) + "</pre>";
+    }
+    return '<div class="pane src"><div class="stick"><div class="pane-head"><h3>As it arrived</h3><span class="meta">' + esc(o.file) + ", " +
+      esc(o.format) + ", " + esc(when(o, false)) + "</span></div>" + body + link + "</div></div>";
+  }
+
+  function lineItem(ln) {
+    var unresolved = !ln.sku, low = !unresolved && ln.confidence < 0.9;
+    var prod = unresolved
+      ? (ln.candidates.length ? "Which one: " + ln.candidates.map(function (k) {
+          return esc((ln.candidate_names || {})[k] || k) + ' <span class="sku">' + esc(k) + "</span>"; }).join(" or ") + "?" : "Not in catalog")
+      : esc(ln.product) + '<span class="sku">' + esc(ln.sku) + "</span>";
+    var qty = ln.qty == null ? "?" : ln.qty + " " + esc(ln.sell_unit) + (ln.qty === 1 ? "" : "s");
+    var price = ln.unit_price == null ? '<span class="i-no">price pending</span>'
+      : qty + " × " + money(ln.unit_price) + " = <b>" + money(ln.line_total) + "</b>";
+    var how = unresolved ? '<span class="i-no">Not matched: ' + tx(ln.method) + "</span>"
+      : "Matched by: " + tx(ln.method) + (low ? ' <span class="i-no">(not enough on its own)</span>' : "");
+    var unitNote = ln.inferred ? (ln.unit_note || "").replace(/;?\s*quantity inferred by Claude[^;]*/, "") : ln.unit_note;
+    var notes = [unitNote, ln.history_hint].filter(Boolean).map(tx).join(" ");
+    return '<li class="line' + (unresolved || low ? " bad" : "") + '">' +
+      '<span class="wrote">“' + esc(ln.as_written) + '”, ' + esc(ln.qty_written) + "</span>" +
+      '<span class="prod">' + prod + "</span>" +
+      '<span class="money num">' + price + "</span>" +
+      (ln.inferred ? '<span class="inferred">Inferred quantity: the customer didn’t write a number here</span>' : "") +
+      '<span class="how">' + how + (notes ? ". " + notes : "") + "</span></li>";
+  }
+
+  function resultPane(o) {
+    var a = o.account, cu = o.customer, h = [];
+    var dateHeld = o.reasons.some(function (r) { return r.code === "DATE_CHANGED"; });
+    h.push('<div class="pane res"><div class="pane-head"><h3>After Claude and the rules</h3><span class="meta">' + esc(o.id) + "</span></div>");
+    h.push('<div class="status-row">' + stamp(o) + '<span class="total num">' + money(o.subtotal) + "</span></div>");
+    if (o.reasons.length) {
+      h.push('<ul class="reasons">' + o.reasons.map(function (r) {
+        return "<li><b>" + tx(r.text) + '</b><span class="act">Next: ' + tx(r.action) + "</span></li>";
+      }).join("") + "</ul>");
+    }
+    var custV = a ? esc(a.id + " " + a.name) : '<span class="i-no">No matching account</span>';
+    var custW = "written as “" + esc(cu.as_written || "(none)") + "”" + (cu.sender_email ? ", from " + esc(cu.sender_email) : "") +
+      (a ? ". Matched by: " + esc(cu.method) : "");
+    h.push('<div class="facts">' +
+      '<div class="fact wide"><span class="k">Account</span><span class="v">' + custV + '</span><span class="w">' + custW + "</span>" +
+      (a ? '<div class="acct-rules"><span class="chip">' + esc(a.tier) + ' prices</span><span class="chip">' + esc(a.payment_terms) +
+        '</span><span class="chip">min ' + money(a.min_order) + '</span><span class="chip">delivers ' + esc(a.delivery_days) + "</span>" +
+        a.rules.map(function (r) { return '<span class="chip">' + esc(r) + "</span>"; }).join("") + "</div>" : "") + "</div>" +
+      '<div class="fact"><span class="k">PO number</span><span class="v">' + (o.po_number ? tx(o.po_number)
+        : (a && !a.po_required ? '<span class="soft">none, not required</span>' : '<span class="i-no">missing</span>')) + "</span></div>" +
+      '<div class="fact"><span class="k">Requested</span><span class="v">' + (o.requested_date ? esc(day(o.requested_date)) : "not stated") +
+        '</span><span class="w">' + (o.requested_as_written ? "“" + esc(o.requested_as_written) + "”" : "") + "</span></div>" +
+      '<div class="fact"><span class="k">Delivery</span><span class="v' + (dateHeld ? ' i-no' : '') + '">' +
+        (o.delivery_date ? esc(day(o.delivery_date)) : "on hold") + "</span>" +
+        (dateHeld ? '<span class="w">proposed, to confirm</span>' : "") + "</div>" +
+      "</div>");
+    if (o.repeat_of) {
+      h.push('<div class="repeat">“Same as last time”: copied from ' + tx(o.repeat_of.order_id) + " (" + esc(day(o.repeat_of.date)) +
+        ") in the order history, then adjusted as asked.</div>");
+    }
+    h.push('<ol class="lines">' + o.lines.map(lineItem).join("") + "</ol>");
+    h.push("<h4>Checks</h4><ul class=\"checks\">" + o.checks.map(function (k) {
+      return "<li>" + (k.info ? ICON.note : k.ok ? ICON.ok : ICON.no) + "<span>" + tx(k.text) + "</span></li>";
+    }).join("") + "</ul>");
+    var notes = o.notes.slice();
+    if (o.delivery_instructions) notes.push("Customer note: " + o.delivery_instructions);
+    if (notes.length) {
+      h.push("<h4>Warehouse and driver notes</h4><ul class=\"notes\">" + notes.map(function (n) {
+        return "<li>" + ICON.note + "<span>" + tx(n) + "</span></li>";
+      }).join("") + "</ul>");
+    }
+    if (o.notes_for_reviewer && o.notes_for_reviewer.length) {
+      h.push("<h4>Claude’s notes for the reviewer <span class=\"soft\">(information only, never used to decide)</span></h4><ul class=\"notes\">" +
+        o.notes_for_reviewer.map(function (n) { return "<li>" + ICON.note + "<span>" + tx(n) + "</span></li>"; }).join("") + "</ul>");
+    }
+    h.push('<details class="raw"><summary>Claude’s raw output for this file</summary><pre>' +
+      esc(JSON.stringify(o.extraction, null, 2)) + "</pre></details>");
+    h.push("</div>");
+    return h.join("");
+  }
+
+  var viewer = document.getElementById("viewer");
+  function show(i, scroll) {
+    var o = orders[i];
+    viewer.innerHTML = sourcePane(o) + resultPane(o);
+    document.querySelectorAll(".ticket").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.i === i)); });
+    document.querySelectorAll(".tab").forEach(function (b) { b.setAttribute("aria-selected", String(+b.dataset.i === i)); });
+    if (scroll && history.replaceState) history.replaceState(null, "", "#" + o.id);
+    if (scroll) document.getElementById("viewer-section").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  }
+
+  /* ---------- held orders */
+  var held = orders.map(function (o, i) { return [o, i]; }).filter(function (p) { return !isOk(p[0]); });
+  document.getElementById("exc-h").textContent = held.length + " held for a person";
+  document.getElementById("exceptions").innerHTML = held.map(function (p) {
+    var o = p[0];
+    return "<article><h3>" + esc(who(o)) + '</h3><p class="src">' + esc(o.format) + ", " + esc(o.file) + "</p><ul>" +
+      o.reasons.map(function (r) { return '<li><div class="what">' + tx(r.text) + '</div><div class="act">' + tx(r.action) + "</div></li>"; }).join("") +
+      '</ul><button type="button" class="btn" data-i="' + p[1] + '">Open side by side</button></article>';
+  }).join("");
+  document.getElementById("exceptions").addEventListener("click", function (e) {
+    var b = e.target.closest(".btn"); if (b) show(+b.dataset.i, true);
+  });
+
+  /* ---------- output table */
+  var out = document.getElementById("out");
+  out.innerHTML = "<thead><tr><th>Order</th><th>Status</th><th>Account</th><th>PO</th><th>Delivery</th><th class=r>Lines</th><th class=r>Subtotal</th><th>Source</th></tr></thead><tbody>" +
+    orders.map(function (o, i) {
+      return '<tr data-i="' + i + '" tabindex="0"><td>' + esc(o.id) + '</td><td><span class="pill ' + (isOk(o) ? "ok" : "warn") + '">' +
+        (isOk(o) ? "Approved" : "Held") + "</span></td><td>" + esc(o.account ? o.account.id + " " + o.account.name : "(no match)") +
+        "</td><td>" + esc(o.po_number || "") + "</td><td>" + esc(o.delivery_date ? day(o.delivery_date) : "on hold") +
+        '</td><td class="r num">' + o.lines.length + '</td><td class="r num">' + money(o.subtotal) + "</td><td>" + esc(o.format) + "</td></tr>";
+    }).join("") + "</tbody>";
+  function rowGo(e) { var r = e.target.closest("tr[data-i]"); if (r && (e.type === "click" || e.key === "Enter")) show(+r.dataset.i, true); }
+  out.addEventListener("click", rowGo); out.addEventListener("keydown", rowGo);
+
+  /* ---------- theme toggle */
+  var btn = document.getElementById("theme"), root = document.documentElement;
+  function current() { return root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
+  function label() { btn.textContent = current() === "dark" ? "Light mode" : "Dark mode"; }
+  label();
+  btn.addEventListener("click", function () {
+    root.dataset.theme = current() === "dark" ? "light" : "dark";
+    try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
+    label();
+  });
+
+  function fromHash() { var id = decodeURIComponent(location.hash.slice(1)); return orders.findIndex(function (o) { return o.id === id; }); }
+  var start = fromHash();
+  if (start < 0) start = orders.findIndex(function (o) { return o.file === FEATURED[0][0]; });
+  show(start < 0 ? 0 : start, false);
+  window.addEventListener("hashchange", function () { var i = fromHash(); if (i >= 0) show(i, true); });
+})();
+</script>
+</body>
+</html>

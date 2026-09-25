@@ -1,0 +1,8 @@
+export_type,par_reorder,,,,
+generated_at,2026-09-25 06:00,,,,
+location,Little Fern Coffee - Main St,,,,
+,,,,,
+item_name,supplier_sku,on_hand,par,qty_to_order,uom
+Vanilla extract 1L,VAN-EXT-1L,1,3,2,EA
+Wildflower honey 3kg,HNY-WF-3,0,1,1,EA
+Sliced almonds,NUT-ALM-SL,0.5,1.5,1,BAG
